@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>管理员界面</title>
+  <!-- 请勿在项目正式环境中引用该 layui.css 地址 -->
+  <link href="//unpkg.com/layui@2.9.13/dist/css/layui.css" rel="stylesheet">
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+  <div class="layui-header">
+    <div class="layui-logo">管理员界面</div>
+    <!-- 头部区域（可配合layui已有的水平导航） -->
+    <ul class="layui-nav layui-layout-right">
+      <li class="layui-nav-item">
+        <a href="javascript:;">
+          <img src="/computer manager/img/1.png" class="layui-nav-img">
+          管理员
+        </a>
+        <dl class="layui-nav-child">
+          <dd><a href="">基本资料</a></dd>
+          <dd><a href="">安全设置</a></dd>
+        </dl>
+      </li>
+      <li class="layui-nav-item"><a href="AdminLogin.html">退出</a></li>
+    </ul>
+  </div>
+  
+  <div class="layui-side layui-bg-black">
+    <div class="layui-side-scroll">
+      <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+      <ul class="layui-nav layui-nav-tree" lay-filter="admin-nav">
+        <li class="layui-nav-item">
+          <a href="AdminInterface.html">首页</a>
+        </li>
+        <li class="layui-nav-item">
+          <a href="ComputerManage.html">机器信息管理</a>
+        </li>
+        <li class="layui-nav-item">
+          <a href="ComputerInfo.html">机房信息统计</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="layui-body">
+    <!-- 内容主体区域 -->
+    <div style="padding: 15px;">
+      <!-- 表格内容开始 -->
+      <div style="padding: 16px;"> 
+        <table class="layui-hide" id="statTable" lay-filter="statTable"></table>
+      </div>
+      <script type="text/html" id="toolbarDemo">
+        <div class="layui-btn-container">
+          <button class="layui-btn layui-btn-sm layui-bg-blue" id="addButton">
+            筛选
+          </button>
+        </div>
+      </script>
+      <script type="text/html" id="barStat">
+        <div class="layui-clear-space">
+          <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+          <a class="layui-btn layui-btn-xs" lay-event="more">
+            更多 
+            <i class="layui-icon layui-icon-down"></i>
+          </a>
+        </div>
+      </script>  
+      <script src="//cdn.staticfile.net/layui/2.9.13/layui.js"></script>
+      <script>
+      layui.use(['table', 'dropdown', 'laydate', 'layer'], function(){
+        var table = layui.table;
+        var dropdown = layui.dropdown;
+        var laydate = layui.laydate;
+        var layer = layui.layer;
+        
+        // 创建渲染实例
+        table.render({
+          elem: '#statTable',
+          url: 'demo2.json', // 此处为静态模拟数据，实际使用时需换成真实接口
+          toolbar: '#toolbarDemo', // 修改这里
+          defaultToolbar: ['filter', 'exports', 'print', { // 右上角工具图标
+            title: '提示',
+            layEvent: 'LAYTABLE_TIPS',
+            icon: 'layui-icon-tips',
+            onClick: function(obj) { // 2.9.12+
+              layer.alert('机房信息表格');
+            }
+          }],
+          height: 'full-35', // 最大高度减去其他容器已占有的高度差
+          css: [ // 重设当前表格样式
+            '.layui-table-tool-temp{padding-right: 145px;}'
+          ].join(''),
+          cellMinWidth: 80,
+          page: true,
+          totalRow: true, // 启用合计行
+          cols: [[
+            {type: 'checkbox', fixed: 'left'},
+            {field:'machine_id', fixed: 'left', width:150, title: '机器编号', sort: true,totalRow: '合计：'},
+            {field:'room_name', width:150, title: '机房名称'},
+            {field:'start_time', width:200, title: '上机时间'},
+            {field:'end_time', width:200, title: '下机时间'},
+            {field:'amount', width:150, title: '消费金额', sort: true, totalRow: true}, // 启用该列的合计
+            {fixed: 'right', title:'操作', width:134, minWidth:125, toolbar: '#barStat'}
+          ]],
+          done: function(){
+            // 添加按钮点击事件
+            document.getElementById('addButton').addEventListener('click', function(){
+              layer.open({
+                title: '筛选',
+                type: 1,
+                area: ['50%','50%'],
+                content: `
+                  <div style="padding: 16px;">
+                    <div class="layui-form-item">
+                      <div class="layui-inline">
+                        <label class="layui-form-label">起始日期</label>
+                        <div class="layui-input-inline">
+                          <input type="text" class="layui-input" id="ID-laydate-type-datetime-1" placeholder="">
+                        </div>
+                        <label class="layui-form-label">终止日期</label>
+                        <div class="layui-input-inline">
+                          <input type="text" class="layui-input" id="ID-laydate-type-datetime-2" placeholder="">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                `,
+                btn: ['确定', '取消'],
+                yes: function(index, layero){
+                  // 确定按钮的回调函数
+                  var startDate = layero.find('#ID-laydate-type-datetime-1').val();
+                  var endDate = layero.find('#ID-laydate-type-datetime-2').val();
+                  console.log('起始日期:', startDate);
+                  console.log('终止日期:', endDate);
+                  layer.close(index); // 关闭弹出层
+                },
+                btn2: function(index, layero){
+                  // 取消按钮的回调函数
+                  layer.close(index); // 关闭弹出层
+                },
+                success: function(layero, index){
+                  // 初始化日期时间选择器
+                  laydate.render({
+                    elem: '#ID-laydate-type-datetime-1',
+                    type: 'datetime',
+                    fullPanel: true // 2.8+
+                  });
+                  laydate.render({
+                    elem: '#ID-laydate-type-datetime-2',
+                    type: 'datetime',
+                    fullPanel: true // 2.8+
+                  });
+                }
+              });
+            });
+          },
+          error: function(res, msg){
+            console.log(res, msg)
+          }
+        });
+        
+        
+        // 表头自定义元素工具事件 --- 2.8.8+
+        table.on('colTool(statTable)', function(obj){
+          var event = obj.event;
+          console.log(obj);
+          if(event === 'email-tips'){
+            layer.alert(layui.util.escape(JSON.stringify(obj.col)), {
+              title: '当前列属性配置项'
+            });
+          }
+        });
+        
+        // 触发单元格工具事件
+        table.on('tool(statTable)', function(obj){ // 双击 toolDouble
+          var data = obj.data; // 获得当前行数据
+          // console.log(obj)
+          if(obj.event === 'edit'){
+            layer.open({
+              title: '编辑 - id:'+ data.id,
+              type: 1,
+              area: ['80%','80%'],
+              content: '<div style="padding: 16px;">自定义表单元素</div>'
+            });
+          } else if(obj.event === 'more'){
+            // 更多 - 下拉菜单
+            dropdown.render({
+              elem: this, // 触发事件的 DOM 对象
+              show: true, // 外部事件触发即显示
+              data: [{
+                title: '查看',
+                id: 'detail'
+              },{
+                title: '删除',
+                id: 'del'
+              }],
+              click: function(menudata){
+                if(menudata.id === 'detail'){
+                  layer.msg('查看操作，当前行 ID:'+ data.id);
+                } else if(menudata.id === 'del'){
+                  layer.confirm('真的删除行 [id: '+ data.id +'] 么', function(index){
+                    obj.del(); // 删除对应行（tr）的DOM结构
+                    layer.close(index);
+                    // 向服务端发送删除指令
+                  });
+                } 
+              },
+              align: 'right', // 右对齐弹出
+              style: 'box-shadow: 1px 1px 10px rgb(0 0 0 / 12%);' // 设置额外样式
+            })
+          }
+        });
+       
+        // 触发表格复选框选择
+        table.on('checkbox(statTable)', function(obj){
+          console.log(obj)
+        });
+       
+        // 触发表格单选框选择
+        table.on('radio(statTable)', function(obj){
+          console.log(obj)
+        });
+        
+        // 行单击事件
+        table.on('row(statTable)', function(obj){
+          //console.log(obj);
+          //layer.closeAll('tips');
+        });
+        // 行双击事件
+        table.on('rowDouble(statTable)', function(obj){
+          console.log(obj);
+        });
+       
+        // 单元格编辑事件
+        table.on('edit(statTable)', function(obj){
+          var field = obj.field; // 得到字段
+          var value = obj.value; // 得到修改后的值
+          var data = obj.data; // 得到所在行所有键值
+          // 值的校验
+ 
+          // 编辑后续操作，如提交更新请求，以完成真实的数据更新
+          // …
+          layer.msg('编辑成功', {icon: 1});
+          
+          // 其他更新操作
+          var update = {};
+          update[field] = value;
+          obj.update(update);
+        });
+      });
+      </script>
+      <!-- 表格内容结束 -->
+    </div>
+  </div>
+  
+
+</div>
+
+<!-- 请勿在项目正式环境中引用该 layui.js 地址 -->
+<script src="//unpkg.com/layui@2.9.13/dist/layui.js"></script>
+<script>
+layui.use('element', function(){
+  var element = layui.element;
+  
+  //一些事件监听
+  element.on('nav(admin-nav)', function(elem){
+    console.log(elem)
+    
+  });
+});
+</script>
+</body>
+</html>
