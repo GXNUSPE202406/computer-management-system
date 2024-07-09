@@ -11,10 +11,12 @@ import com.gxnu.pojo.PortalVo;
 import com.gxnu.service.MachineService;
 import com.gxnu.mapper.MachineMapper;
 import com.gxnu.utils.Result;
+import com.gxnu.utils.ResultCodeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -60,6 +62,21 @@ public class MachineServiceImpl extends ServiceImpl<MachineMapper, Machine>
 //        return Result.ok(pageInfoMap);
 
         return null;
+    }
+
+    @Override
+    public Result findRoomMachines(String roomId) {
+        LambdaQueryWrapper<Machine> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Machine::getRoomId, Integer.parseInt(roomId));
+
+        List<Machine> list = machineMapper.selectList(queryWrapper);
+        Long count = machineMapper.selectCount(queryWrapper);
+
+        Map map = new HashMap();
+        map.put("count", count);
+        map.put("data", list);
+
+        return Result.build(map, ResultCodeEnum.SUCCESS);
     }
 }
 

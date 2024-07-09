@@ -4,15 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>管理员界面</title>
-  <!-- 请勿在项目正式环境中引用该 layui.css 地址 -->
-  <!-- <link href="//unpkg.com/layui@2.9.13/dist/css/layui.css" rel="stylesheet"> -->
   <link rel="stylesheet" href="layui/css/layui.css">
 </head>
 <body>
 <div class="layui-layout layui-layout-admin">
   <div class="layui-header">
     <div class="layui-logo">管理员界面</div>
-    <!-- 头部区域（可配合layui已有的水平导航） -->
     <ul class="layui-nav layui-layout-right">
       <li class="layui-nav-item">
         <a href="javascript:;">
@@ -30,13 +27,12 @@
   
   <div class="layui-side layui-bg-black">
     <div class="layui-side-scroll">
-      <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
       <ul class="layui-nav layui-nav-tree" lay-filter="admin-nav">
         <li class="layui-nav-item">
           <a href="AdminInterface.html">首页</a>
         </li>
         <li class="layui-nav-item">
-          <a href="ComputerManage.html">机器信息管理</a>
+          <a href="RoomManage.html">机器信息管理</a>
         </li>
         <li class="layui-nav-item">
           <a href="ComputerInfo.html">机房信息统计</a>
@@ -45,79 +41,154 @@
     </div>
   </div>
   
-  <!-- 主内容区域 -->
   <div class="layui-body">
     <div class="layui-container">
-      <h2>机房信息</h2>
-      <div id="room-buttons" class="layui-btn-container">
-        <!-- 机房按钮将被添加到这里 -->
-      </div>
+      <button class="layui-btn layui-btn-radius layui-btn-lg " id="add-room">添加机房</button>
+      <table class="layui-table">
+        <thead>
+          <tr>
+            <th>序号</th>
+            <th>机房名称</th>
+            <th>机器数量</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="room-list">
+          <!-- 机房信息将插入到这里 -->
+        </tbody>
+      </table>
+      <div id="pagination"></div>
     </div>
   </div>
 </div>
 
 <script src="layui/layui.js"></script>
 <script>
-  layui.use(['jquery', 'layer'], function(){
-    var $ = layui.jquery;
-    var layer = layui.layer;
+layui.use(['layer', 'table', 'laypage'], function(){
+  var layer = layui.layer;
+  var table = layui.table;
+  var laypage = layui.laypage;
 
-    // 获取机房信息
-    function fetchRoomInfo() {
-      $.ajax({
-        url: 'http://localhost:8080/adminPortal/findAllRoom',
-        method: 'GET',
-        success: function(response) {
-          if (response.code === 200) {
-            var rooms = response.data.data;
-            var roomButtonsContainer = $('#room-buttons');
-            roomButtonsContainer.empty(); // 清空现有的按钮
+  // 请求机房信息
+  fetch('http://localhost:8080/adminPortal/findAllRoom')
+    .then(response => response.json())
+    .then(data => {
+      if (data.code === 200) {
+        var rooms = data.data.data;
+        var count = data.data.count;
 
-            rooms.forEach(function(room) {
-              var button = $('<button class="layui-btn layui-btn-primary"></button>');
-              button.text(room.roomName + ' (' + room.machineNumber + '台机器)');
-              button.attr('data-room-id', room.roomId);
-              button.on('click', function() {
-                var roomId = $(this).attr('data-room-id');
-                fetchRoomDetails(roomId);
-              });
-              roomButtonsContainer.append(button);
-            });
-          } else {
-            layer.msg('获取机房信息失败');
+        // 初始化分页
+        laypage.render({
+          elem: 'pagination',
+          count: count,
+          limit: 10,
+          jump: function(obj, first){
+            if(!first){
+              renderRoomList(rooms.slice((obj.curr - 1) * obj.limit, obj.curr * obj.limit), obj.curr, obj.limit);
+            }
           }
-        },
-        error: function() {
-          layer.msg('请求失败');
-        }
-      });
-    }
+        });
 
-    // 获取机房详情
-    function fetchRoomDetails(roomId) {
-      $.ajax({
-        url: 'http://localhost:8080/Room/' + roomId,
-        method: 'GET',
-        success: function(response) {
-          if (response.code === 200) {
-            var roomDetails = response.data;
-            layer.open({
-              title: '机房详情',
-              content: JSON.stringify(roomDetails, null, 2)
-            });
+        // 初始渲染第一页
+        renderRoomList(rooms.slice(0, 10), 1, 10);
+      } else {
+        layer.msg('获取机房信息失败');
+      }
+    });
+
+  function renderRoomList(rooms, currentPage, limit) {
+    var roomList = document.getElementById('room-list');
+    roomList.innerHTML = '';
+    rooms.forEach((room, index) => {
+      var tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${(currentPage - 1) * limit + index + 1}</td>
+        <td>${room.roomName}</td>
+        <td>${room.machineNumber}</td>
+        <td>
+          <button class="layui-btn layui-btn-normal" onclick="viewRoom(${room.roomId})">查看</button>
+          <button class="layui-btn layui-btn-warm" onclick="editRoom(${room.roomId}, '${room.roomName}')">修改</button>
+          <button class="layui-btn layui-btn-danger" onclick="deleteRoom(${room.roomId})">删除</button>
+        </td>
+      `;
+      roomList.appendChild(tr);
+    });
+  }
+
+  window.viewRoom = function(roomId) {
+    window.location.href = 'ComputerManage.html?roomId=' + roomId;
+  }
+
+  window.editRoom = function(roomId, roomName) {
+    layer.prompt({
+      formType: 0,
+      value: roomName,
+      title: '修改机房名称'
+    }, function(value, index){
+        var roomName = encodeURIComponent(value);
+        var url = `http://localhost:8080/adminPortal/modifyRoom?roomId=${roomId}&roomName=${roomName}`;
+      fetch(url, {
+        method: 'GET'
+      }).then(response => response.json())
+        .then(data => {
+          if (data.code === 200) {
+            layer.msg('修改成功');
+            setTimeout(function() {
+                location.reload();
+            }, 2000);
           } else {
-            layer.msg('获取机房详情失败');
+            layer.msg('修改失败');
           }
-        },
-        error: function() {
-          layer.msg('请求失败');
-        }
-      });
-    }
+        });
+      layer.close(index);
+    });
+  }
 
-    // 页面加载时获取机房信息
-    fetchRoomInfo();
+  window.deleteRoom = function(roomId) {
+    layer.confirm('确定删除该机房吗？', function(index){
+        var url = `http://localhost:8080/adminPortal/delRoom?roomId=${roomId}`;
+      fetch(url, {
+        method: 'GET'
+      }).then(response => response.json())
+        .then(data => {
+          if (data.code === 200) {
+            layer.msg('删除成功');
+            setTimeout(function() {
+                location.reload();
+            }, 2000);
+          } else {
+            layer.msg('删除失败');
+          }
+        });
+      layer.close(index);
+    });
+  }
+
+  // 添加机房
+  document.getElementById('add-room').addEventListener('click', function(){
+    layer.prompt({
+      formType: 0,
+      title: '请输入机房名称'
+    }, function(value, index){
+        var roomName = encodeURIComponent(value);
+        var url = `http://localhost:8080/adminPortal/addRoom?roomName=${roomName}`;
+      fetch(url, {
+        method: 'GET'
+      }).then(response => response.json())
+        .then(data => {
+          if (data.code === 200) {
+            layer.msg('添加成功');
+            setTimeout(function() {
+                location.reload();
+            }, 2000);
+          } else {
+            layer.msg('添加失败');
+          }
+        });
+      layer.close(index);
+    });
   });
+});
 </script>
 </body>
 </html>

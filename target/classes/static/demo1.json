@@ -1,9 +1,39 @@
 {
-    "code": 0,
-    "msg": "",
-    "count": 1,
-    "data": [
- {"machine_id": 19, "display": "显示器S", "cpu": "Intel i5", "gpu": "NVIDIA GTX 1660 Ti", "room_name": "机房19", "price_per_hour": 13}
-    ]
-  }
-  
+   "code": 200,
+   "message": "success",
+   "data": {
+     "data": [
+       {
+         "computerId": 1,
+         "gpuModel": "NVIDIA RTX 3080",
+         "cpuModel": "Intel i9-14900k",
+         "screenModel": "Dell 27",
+         "costPerHour": 50,
+         "roomId": 1,
+         "isDeleted": 0,
+         "version": 1
+       },
+       {
+         "computerId": 2,
+         "gpuModel": "4090ti",
+         "cpuModel": "i9 13400k",
+         "screenModel": "Dell",
+         "costPerHour": 100,
+         "roomId": 1,
+         "isDeleted": 0,
+         "version": 1
+       },
+       {
+         "computerId": 3,
+         "gpuModel": "4090ti",
+         "cpuModel": "i9 13400k",
+         "screenModel": "Dell",
+         "costPerHour": 100,
+         "roomId": 1,
+         "isDeleted": 0,
+         "version": 1
+       }
+     ],
+     "count": 3
+   }
+ }

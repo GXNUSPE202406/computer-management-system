@@ -13,4 +13,6 @@ import com.gxnu.utils.Result;
 public interface MachineService extends IService<Machine> {
 
     Result findNewPage(PortalVo portalVo);
+
+    Result findRoomMachines(String roomId);
 }

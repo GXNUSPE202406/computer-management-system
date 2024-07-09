@@ -2,6 +2,7 @@ package com.gxnu.service;
 
 import com.gxnu.pojo.Room;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.gxnu.utils.Result;
 
 /**
 * @author 王功磊
@@ -10,4 +11,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface RoomService extends IService<Room> {
 
+    Result addRoom(String roomName);
+
+    Result delRoom(String roomId);
+
+    Result modifyRoom(String roomId, String roomName);
 }
