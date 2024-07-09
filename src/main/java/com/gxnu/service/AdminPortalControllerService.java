@@ -11,5 +11,4 @@ import com.gxnu.utils.Result;
  */
 public interface AdminPortalControllerService extends IService<MachineInfo> {
 
-    Result addMachineInfo(MachineInfo machineInfo);
 }

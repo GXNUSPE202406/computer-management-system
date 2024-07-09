@@ -6,8 +6,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.databind.annotation.JsonAppend;
+import com.gxnu.mapper.RoomMapper;
 import com.gxnu.pojo.Machine;
+import com.gxnu.pojo.MachineInfo;
 import com.gxnu.pojo.PortalVo;
+import com.gxnu.pojo.Room;
 import com.gxnu.service.MachineService;
 import com.gxnu.mapper.MachineMapper;
 import com.gxnu.utils.Result;
@@ -30,6 +33,9 @@ public class MachineServiceImpl extends ServiceImpl<MachineMapper, Machine>
 
     @Autowired
     private MachineMapper machineMapper;
+
+    @Autowired
+    private RoomMapper roomMapper;
 
     @Override
     public Result findNewPage(PortalVo portalVo) {
@@ -65,6 +71,23 @@ public class MachineServiceImpl extends ServiceImpl<MachineMapper, Machine>
     }
 
     @Override
+    public Result addMachine(Machine machine) {
+        machineMapper.insert(machine);
+
+        Room room = roomMapper.selectById(machine.getRoomId());
+        room.setMachineNumber(room.getMachineNumber() + 1);
+        roomMapper.updateById(room);
+
+        return Result.ok(null);
+    }
+
+    @Override
+    public Result delMachine(String computerId) {
+        machineMapper.deleteById(Integer.parseInt(computerId));
+        return Result.ok(null);
+    }
+
+    @Override
     public Result findRoomMachines(String roomId) {
         LambdaQueryWrapper<Machine> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Machine::getRoomId, Integer.parseInt(roomId));
@@ -78,6 +101,7 @@ public class MachineServiceImpl extends ServiceImpl<MachineMapper, Machine>
 
         return Result.build(map, ResultCodeEnum.SUCCESS);
     }
+
 }
 
 

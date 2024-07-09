@@ -2,6 +2,7 @@ package com.gxnu.service;
 
 import com.gxnu.pojo.Machine;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.gxnu.pojo.MachineInfo;
 import com.gxnu.pojo.PortalVo;
 import com.gxnu.utils.Result;
 
@@ -13,6 +14,11 @@ import com.gxnu.utils.Result;
 public interface MachineService extends IService<Machine> {
 
     Result findNewPage(PortalVo portalVo);
+
+
+    Result addMachine(Machine machine);
+
+    Result delMachine(String computerId);
 
     Result findRoomMachines(String roomId);
 }

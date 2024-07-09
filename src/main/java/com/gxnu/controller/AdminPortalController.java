@@ -1,9 +1,9 @@
 package com.gxnu.controller;
 
-import com.gxnu.pojo.MachineInfo;
+import com.gxnu.pojo.Machine;
 import com.gxnu.pojo.PortalVo;
 import com.gxnu.pojo.Room;
-import com.gxnu.service.AdminPortalControllerService;
+import com.gxnu.service.MachineInfoService;
 import com.gxnu.service.MachineService;
 import com.gxnu.service.RoomService;
 import com.gxnu.utils.Result;
@@ -20,20 +20,21 @@ import java.util.Map;
 public class AdminPortalController {
 
     @Autowired
-    private AdminPortalControllerService adminPortalControllerService;
-
-    @Autowired
     private RoomService roomService;
 
     @Autowired
     private MachineService machineService;
 
-    @Autowired
-    private
 
-    @GetMapping ("addMachineInfo")
-    public Result addMachine(@RequestBody MachineInfo machineInfo) {
-        Result result = adminPortalControllerService.addMachineInfo(machineInfo);
+    @PostMapping ("addMachine")
+    public Result addMachine(@RequestBody Machine machine) {
+        Result result = machineService.addMachine(machine);
+        return result;
+    }
+
+    @PostMapping ("delMachine")
+    public Result delMachine(@RequestBody String computerId) {
+        Result result = machineService.delMachine(computerId);
         return result;
     }
 

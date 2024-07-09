@@ -121,7 +121,6 @@
             {field:'screenModel', title: '显示器', minWidth: 150},
             {field:'cpuModel', title: 'CPU', minWidth: 150},
             {field:'gpuModel', title: '显卡', minWidth: 150},
-            {field:'roomId', title: '机房名称', minWidth: 150},
             {field:'costPerHour', title: '单价/h', sort: true, minWidth: 150},
             {fixed: 'right', title:'操作', minWidth:125, toolbar: '#barDemo'}
           ]],
@@ -154,12 +153,6 @@
                       </div>
                     </div>
                     <div class="layui-form-item">
-                      <label class="layui-form-label">机房名称</label>
-                      <div class="layui-input-block">
-                        <input type="text" name="room_name" required lay-verify="required" placeholder="请输入机房名称" autocomplete="off" class="layui-input">
-                      </div>
-                    </div>
-                    <div class="layui-form-item">
                       <label class="layui-form-label">单价/h</label>
                       <div class="layui-input-block">
                         <input type="number" name="price_per_hour" required lay-verify="required" placeholder="请输入单价/h" autocomplete="off" class="layui-input">
@@ -186,7 +179,7 @@
                         cpuModel: data.field.cpu,
                         screenModel: data.field.display,
                         costPerHour: data.field.price_per_hour,
-                        roomName: roomId
+                        roomId: roomId
                     };
                     fetch(url, {
                       method: 'POST',
@@ -206,8 +199,8 @@
                         }
                       });
                     
-                    console.log(data.field); // 当前表单数据
-                    table.reload('test'); // 重新渲染表格
+                    // console.log(data.field); // 当前表单数据
+                    // table.reload('test'); // 重新渲染表格
                     layer.close(index); // 关闭弹出层
                     return false; // 阻止表单跳转。如果需要表单跳转，去掉这段即可。
                   });
@@ -261,12 +254,6 @@
                     </div>
                   </div>
                   <div class="layui-form-item">
-                    <label class="layui-form-label">机房名称</label>
-                    <div class="layui-input-block">
-                      <input type="text" name="room_name" required lay-verify="required" value="${data.roomId}" class="layui-input">
-                    </div>
-                  </div>
-                  <div class="layui-form-item">
                     <label class="layui-form-label">单价/h</label>
                     <div class="layui-input-block">
                       <input type="number" name="price_per_hour" required lay-verify="required" value="${data.costPerHour}" class="layui-input">
@@ -299,13 +286,31 @@
           } else if(obj.event === 'del'){
 
             layer.confirm('真的要删除吗？', {icon: 3}, function(){
+              var url = 'http://localhost:8080/adminPortal/delMachine';
+                    var selectedData = {
+                      computerId: data.computerId
+                    };
+                    fetch(url, {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json' // 设置请求头为 JSON
+                      },
+                      body: JSON.stringify(selectedData) // 将表单数据转换为 JSON 字符串
+                    }).then(response => response.json())
+                      .then(data => {
+                        if (data.code === 200) {
+                          layer.msg('删除成功', {icon: 1});
+                          setTimeout(function() {
+                              location.reload();
+                          }, 2000);
+                        } else {
+                          layer.msg('删除失败');
+                        }
+                      });
 
-            layer.msg('删除成功', {icon: 1});
+
               
-
-            }, function(){
-
-            layer.msg('删除失败');
+              
 
             });
           }
