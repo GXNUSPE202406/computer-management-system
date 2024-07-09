@@ -1,4 +1,4 @@
-package com.gxnu.service.impl;
+package com.gxnu.service;
 
 public interface MachineInfoService {
 }
