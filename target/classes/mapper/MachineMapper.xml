@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gxnu.mapper.MachineMapper">
+
+    <resultMap id="BaseResultMap" type="com.gxnu.pojo.Machine">
+            <id property="computerId" column="computer_id" jdbcType="INTEGER"/>
+            <result property="gpuModel" column="gpu_model" jdbcType="VARCHAR"/>
+            <result property="cpuModel" column="cpu_model" jdbcType="VARCHAR"/>
+            <result property="screenModel" column="screen_model" jdbcType="VARCHAR"/>
+            <result property="costPerHour" column="cost_per_hour" jdbcType="INTEGER"/>
+            <result property="roomId" column="room_id" jdbcType="INTEGER"/>
+            <result property="isDeleted" column="is_deleted" jdbcType="TINYINT"/>
+            <result property="version" column="version" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        computer_id,gpu_model,cpu_model,
+        screen_model,cost_per_hour,room_id,
+        is_deleted,version
+    </sql>
+</mapper>

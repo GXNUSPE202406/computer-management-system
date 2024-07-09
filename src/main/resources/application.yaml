@@ -1,0 +1,61 @@
+
+
+# server配置
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+
+spring:
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+  # 连接池配置
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      url: jdbc:mysql:///db_computer_management
+      username: root
+      password: '123456'
+      driver-class-name: com.mysql.cj.jdbc.Driver
+  #邮箱配置
+  mail:
+    # 发送者邮箱
+    username: wangglc@foxmail.com
+    #申请到的授权码
+    password: shuvgrmuglmqebef
+    # 配置 SMTP 服务器地址
+    host: smtp.qq.com
+    # 端口号465或587
+    port: 465
+    protocol: smtps
+    # 默认的邮件编码为UTF-8
+    default-encoding: UTF-8
+    # 配置SSL 加密工厂
+    properties:
+      mail:
+        smtp:
+          socketFactoryClass: javax.net.ssl.SSLSocketFactory
+          #表示开启 DEBUG 模式，这样，邮件发送过程的日志会在控制台打印出来，方便排查错误
+          debug: true
+          ssl: true
+
+
+# mybatis-plus的配置
+mybatis-plus:
+  type-aliases-package: com.gxnu.pojo
+  global-config:
+    db-config:
+      logic-delete-field: isDeleted  #全局逻辑删除
+      id-type: auto #主键策略自增长
+      table-prefix: db_ # 设置表的前缀
+
+
+#jwt配置
+jwt:
+  token:
+    tokenExpiration: 120 #有效时间,单位分钟
+    tokenSignKey: gxnuwwwgl919  #当前程序签名秘钥 自定义
+

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>学生登录</title>
+    <!-- 请勿在项目正式环境中引用该 layui.css 地址 -->
+<!--    <link href="//unpkg.com/layui@2.9.13/dist/css/layui.css" rel="stylesheet">-->
+    <link rel="stylesheet" href="layui/css/layui.css">
+</head>
+<body>
+<style>
+    .demo-login-container{width: 320px; margin: 21px auto 0;}
+    .demo-login-other .layui-icon{position: relative; display: inline-block; margin: 0 2px; top: 2px; font-size: 26px;}
+</style>
+<form class="layui-form">
+    <div class="demo-login-container">
+        <h2 style="text-align: center;">学生登录</h2>
+        <br><br>
+        <div class="layui-form-item">
+            <div class="layui-input-wrap">
+                <div class="layui-input-prefix">
+                    <i class="layui-icon layui-icon-username"></i>
+                </div>
+                <input type="text" name="studentEmail" value="" lay-verify="required" placeholder="邮   箱" lay-reqtext="请填写邮箱" autocomplete="off" class="layui-input" lay-affix="clear">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-wrap">
+                <div class="layui-input-prefix">
+                    <i class="layui-icon layui-icon-password"></i>
+                </div>
+                <input type="password" name="studentPassword" value="" lay-verify="required" placeholder="密   码" lay-reqtext="请填写密码" autocomplete="off" class="layui-input" lay-affix="eye">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <input type="checkbox" name="remember" lay-skin="primary" title="记住密码">
+            <a href="PasswordChange.html" style="float: right; margin-top: 7px;">忘记密码？</a>
+        </div>
+        <div class="layui-form-item">
+            <button class="layui-btn layui-btn-fluid" lay-submit lay-filter="demo-login" >登录</button>
+        </div>
+        <div class="layui-form-item demo-login-other">
+            <a href="register.html" id="register-link">注册帐号</a>
+        </div>
+    </div>
+</form>
+
+<!-- 请勿在项目正式环境中引用该 layui.js 地址 -->
+<script src="//unpkg.com/layui@2.9.13/dist/layui.js"></script>
+<script>
+    layui.use(function(){
+        var form = layui.form;
+        var layer = layui.layer;
+
+        // 提交事件
+        form.on('submit(demo-login)', function(data){
+            var field = data.field; // 获取表单字段值
+
+            // 构造符合要求的 JSON 对象，只包含邮箱和密码
+            var jsonData = {
+                studentEmail: field.studentEmail,
+                studentPassword: field.studentPassword
+            };
+
+            // 将 JSON 对象转换为字符串
+            var jsonString = JSON.stringify(jsonData);
+
+            // 使用 fetch API 发送 POST 请求
+            fetch('http://localhost:8080/student/login', {
+                method: 'POST', // 使用 POST 方法
+                headers: {
+                    'Content-Type': 'application/json' // 设置请求头，表示发送 JSON 数据
+                },
+                body: jsonString // 请求体中包含 JSON 数据
+            })
+                .then(response => response.json()) // 解析 JSON 响应
+                .then(data => {
+                    if (data.code==200) { // 假设返回的 JSON 对象中有一个 success 字段表示登录是否成功
+                        window.location.href = 'StudentInterface.html'; // 登录成功，跳转到 StudentInterface.html
+                    } else if(data.code==501) {
+                        layer.msg('登录失败，邮箱不存在'); // 显示错误信息
+                    }else{
+                        layer.msg('登录失败，密码错误');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error); // 处理错误响应
+                    layer.msg('登录失败，请稍后再试'); // 显示错误信息
+                });
+
+            return false; // 阻止默认 form 跳转
+        });
+    });
+</script>
+
+</body>
+</html>
