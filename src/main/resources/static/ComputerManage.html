@@ -117,13 +117,13 @@
         },
           cols: [[
             {type: 'checkbox', fixed: 'left'},
-            {title: '序号', type: 'numbers', fixed: 'left', width: 60}, // 序号列
-            {field:'screenModel', width:150, title: '显示器'},
-            {field:'cpuModel', width:150, title: 'CPU'},
-            {field:'gpuModel', width:150, title: '显卡'},
-            {field:'roomId', width:150, title: '机房名称'},
-            {field:'costPerHour', width:100, title: '单价/h', sort: true},
-            {fixed: 'right', title:'操作', width:134, minWidth:125, toolbar: '#barDemo'}
+            {title: '序号', type: 'numbers', fixed: 'left', minWidth: 150}, // 序号列
+            {field:'screenModel', title: '显示器', minWidth: 150},
+            {field:'cpuModel', title: 'CPU', minWidth: 150},
+            {field:'gpuModel', title: '显卡', minWidth: 150},
+            {field:'roomId', title: '机房名称', minWidth: 150},
+            {field:'costPerHour', title: '单价/h', sort: true, minWidth: 150},
+            {fixed: 'right', title:'操作', minWidth:125, toolbar: '#barDemo'}
           ]],
           done: function(){
             // 添加按钮点击事件
@@ -179,9 +179,33 @@
                     layer.close(index);
                   });
 
-                  // 确认按钮（表单提交）事件
                   form.on('submit(formAdd)', function(data){
-                    data.field.machine_id = machineIdCounter++; // 自动生成机器编号
+                    var url = 'http://localhost:8080/adminPortal/addMachine';
+                    var selectedData = {
+                        gpuModel: data.field.gpu,
+                        cpuModel: data.field.cpu,
+                        screenModel: data.field.display,
+                        costPerHour: data.field.price_per_hour,
+                        roomName: roomId
+                    };
+                    fetch(url, {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json' // 设置请求头为 JSON
+                      },
+                      body: JSON.stringify(selectedData) // 将表单数据转换为 JSON 字符串
+                    }).then(response => response.json())
+                      .then(data => {
+                        if (data.code === 200) {
+                          layer.msg('添加成功');
+                          setTimeout(function() {
+                              location.reload();
+                          }, 2000);
+                        } else {
+                          layer.msg('添加失败');
+                        }
+                      });
+                    
                     console.log(data.field); // 当前表单数据
                     table.reload('test'); // 重新渲染表格
                     layer.close(index); // 关闭弹出层
@@ -221,31 +245,31 @@
                   <div class="layui-form-item">
                     <label class="layui-form-label">显示器</label>
                     <div class="layui-input-block">
-                      <input type="text" name="display" required lay-verify="required" value="${data.display}" class="layui-input">
+                      <input type="text" name="display" required lay-verify="required" value="${data.screenModel}" class="layui-input">
                     </div>
                   </div>
                   <div class="layui-form-item">
                     <label class="layui-form-label">CPU</label>
                     <div class="layui-input-block">
-                      <input type="text" name="cpu" required lay-verify="required" value="${data.cpu}" class="layui-input">
+                      <input type="text" name="cpu" required lay-verify="required" value="${data.cpuModel}" class="layui-input">
                     </div>
                   </div>
                   <div class="layui-form-item">
                     <label class="layui-form-label">显卡</label>
                     <div class="layui-input-block">
-                      <input type="text" name="gpu" required lay-verify="required" value="${data.gpu}" class="layui-input">
+                      <input type="text" name="gpu" required lay-verify="required" value="${data.gpuModel}" class="layui-input">
                     </div>
                   </div>
                   <div class="layui-form-item">
                     <label class="layui-form-label">机房名称</label>
                     <div class="layui-input-block">
-                      <input type="text" name="room_name" required lay-verify="required" value="${data.room_name}" class="layui-input">
+                      <input type="text" name="room_name" required lay-verify="required" value="${data.roomId}" class="layui-input">
                     </div>
                   </div>
                   <div class="layui-form-item">
                     <label class="layui-form-label">单价/h</label>
                     <div class="layui-input-block">
-                      <input type="number" name="price_per_hour" required lay-verify="required" value="${data.price_per_hour}" class="layui-input">
+                      <input type="number" name="price_per_hour" required lay-verify="required" value="${data.costPerHour}" class="layui-input">
                     </div>
                   </div>
                   <div class="layui-form-item">
@@ -264,6 +288,7 @@
 
                 // 确认按钮（表单提交）事件
                 form.on('submit(formEdit)', function(formdata){
+
                   // 更新表格数据
                   obj.update(formdata.field);
                   layer.close(index); // 关闭弹出层

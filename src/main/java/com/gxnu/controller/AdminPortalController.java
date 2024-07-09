@@ -28,6 +28,9 @@ public class AdminPortalController {
     @Autowired
     private MachineService machineService;
 
+    @Autowired
+    private
+
     @GetMapping ("addMachineInfo")
     public Result addMachine(@RequestBody MachineInfo machineInfo) {
         Result result = adminPortalControllerService.addMachineInfo(machineInfo);
