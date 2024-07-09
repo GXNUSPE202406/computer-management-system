@@ -1,0 +1,43 @@
+{
+    "code": 0,
+    "msg": "",
+    "count": 5,
+    "data": [
+      {
+        "machine_id": "M001",
+        "room_name": "机房A",
+        "start_time": "2024-07-01 08:00:00",
+        "end_time": "2024-07-01 10:00:00",
+        "amount": 20.00
+      },
+      {
+        "machine_id": "M002",
+        "room_name": "机房A",
+        "start_time": "2024-07-01 09:00:00",
+        "end_time": "2024-07-01 11:00:00",
+        "amount": 22.00
+      },
+      {
+        "machine_id": "M003",
+        "room_name": "机房B",
+        "start_time": "2024-07-01 10:00:00",
+        "end_time": "2024-07-01 12:00:00",
+        "amount": 18.00
+      },
+      {
+        "machine_id": "M004",
+        "room_name": "机房B",
+        "start_time": "2024-07-01 11:00:00",
+        "end_time": "2024-07-01 13:00:00",
+        "amount": 25.00
+      },
+      {
+        "machine_id": "M005",
+        "room_name": "机房C",
+        "start_time": "2024-07-01 12:00:00",
+        "end_time": "2024-07-01 14:00:00",
+        "amount": 30.00
+      }
+    ]
+  }
+  

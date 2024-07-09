@@ -10,7 +10,9 @@ import com.gxnu.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("adminPortal")
@@ -35,7 +37,11 @@ public class AdminPortalController {
     @GetMapping("findAllRoom")
     public Result findAllRoom() {
         List<Room> list = roomService.list();
-        return Result.ok(list);
+        Long count = roomService.count();
+        Map map = new HashMap();
+        map.put("count", count);
+        map.put("data", list);
+        return Result.ok(map);
     }
 
 

@@ -59,7 +59,7 @@ public class MachineServiceImpl extends ServiceImpl<MachineMapper, Machine>
 //        // 响应JSON
 //        return Result.ok(pageInfoMap);
 
-
+        return null;
     }
 }
 

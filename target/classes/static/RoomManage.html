@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>管理员界面</title>
+  <!-- 请勿在项目正式环境中引用该 layui.css 地址 -->
+  <!-- <link href="//unpkg.com/layui@2.9.13/dist/css/layui.css" rel="stylesheet"> -->
+  <link rel="stylesheet" href="layui/css/layui.css">
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+  <div class="layui-header">
+    <div class="layui-logo">管理员界面</div>
+    <!-- 头部区域（可配合layui已有的水平导航） -->
+    <ul class="layui-nav layui-layout-right">
+      <li class="layui-nav-item">
+        <a href="javascript:;">
+          <img src="/computer manager/img/1.png" class="layui-nav-img">
+          管理员
+        </a>
+        <dl class="layui-nav-child">
+          <dd><a href="">基本资料</a></dd>
+          <dd><a href="">安全设置</a></dd>
+        </dl>
+      </li>
+      <li class="layui-nav-item"><a href="AdminLogin.html">退出</a></li>
+    </ul>
+  </div>
+  
+  <div class="layui-side layui-bg-black">
+    <div class="layui-side-scroll">
+      <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+      <ul class="layui-nav layui-nav-tree" lay-filter="admin-nav">
+        <li class="layui-nav-item">
+          <a href="AdminInterface.html">首页</a>
+        </li>
+        <li class="layui-nav-item">
+          <a href="ComputerManage.html">机器信息管理</a>
+        </li>
+        <li class="layui-nav-item">
+          <a href="ComputerInfo.html">机房信息统计</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  
+  <!-- 主内容区域 -->
+  <div class="layui-body">
+    <div class="layui-container">
+      <h2>机房信息</h2>
+      <div id="room-buttons" class="layui-btn-container">
+        <!-- 机房按钮将被添加到这里 -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="layui/layui.js"></script>
+<script>
+  layui.use(['jquery', 'layer'], function(){
+    var $ = layui.jquery;
+    var layer = layui.layer;
+
+    // 获取机房信息
+    function fetchRoomInfo() {
+      $.ajax({
+        url: 'http://localhost:8080/adminPortal/findAllRoom',
+        method: 'GET',
+        success: function(response) {
+          if (response.code === 200) {
+            var rooms = response.data.data;
+            var roomButtonsContainer = $('#room-buttons');
+            roomButtonsContainer.empty(); // 清空现有的按钮
+
+            rooms.forEach(function(room) {
+              var button = $('<button class="layui-btn layui-btn-primary"></button>');
+              button.text(room.roomName + ' (' + room.machineNumber + '台机器)');
+              button.attr('data-room-id', room.roomId);
+              button.on('click', function() {
+                var roomId = $(this).attr('data-room-id');
+                fetchRoomDetails(roomId);
+              });
+              roomButtonsContainer.append(button);
+            });
+          } else {
+            layer.msg('获取机房信息失败');
+          }
+        },
+        error: function() {
+          layer.msg('请求失败');
+        }
+      });
+    }
+
+    // 获取机房详情
+    function fetchRoomDetails(roomId) {
+      $.ajax({
+        url: 'http://localhost:8080/Room/' + roomId,
+        method: 'GET',
+        success: function(response) {
+          if (response.code === 200) {
+            var roomDetails = response.data;
+            layer.open({
+              title: '机房详情',
+              content: JSON.stringify(roomDetails, null, 2)
+            });
+          } else {
+            layer.msg('获取机房详情失败');
+          }
+        },
+        error: function() {
+          layer.msg('请求失败');
+        }
+      });
+    }
+
+    // 页面加载时获取机房信息
+    fetchRoomInfo();
+  });
+</script>
+</body>
+</html>

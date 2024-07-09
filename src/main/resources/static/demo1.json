@@ -1,0 +1,9 @@
+{
+    "code": 0,
+    "msg": "",
+    "count": 1,
+    "data": [
+ {"machine_id": 19, "display": "显示器S", "cpu": "Intel i5", "gpu": "NVIDIA GTX 1660 Ti", "room_name": "机房19", "price_per_hour": 13}
+    ]
+  }
+  

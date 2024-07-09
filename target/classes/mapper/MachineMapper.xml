@@ -20,4 +20,8 @@
         screen_model,cost_per_hour,room_id,
         is_deleted,version
     </sql>
+
+    <select id="selectPageMap" resultType="map">
+
+    </select>
 </mapper>
