@@ -20,7 +20,7 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room>
 
     @Autowired
     private RoomMapper roomMapper;
-    
+
     @Override
     public Result addRoom(String roomName) {
         Room room = new Room();
