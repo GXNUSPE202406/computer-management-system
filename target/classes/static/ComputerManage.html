@@ -43,7 +43,7 @@
   
   <div class="layui-body">
     <div class="layui-container">
-      <button class="layui-btn layui-btn-radius layui-btn-lg " id="add-room">添加机房</button>
+      <button class="layui-btn layui-btn-radius layui-btn-lg " id="add-room">添加机器</button>
       <table class="layui-table">
         <thead>
           <tr>
@@ -115,8 +115,8 @@ layui.use(['layer', 'table', 'laypage'], function(){
         <td>${machine.gpuModel}</td>
         <td>${machine.costPerHour}</td>
         <td>
-          <button class="layui-btn layui-btn-warm" onclick="editmachine(${machine.computerId}, ${machine.screenModel}, ${machine.cpuModel}, ${machine.gpuModel}, ${machine.costPerHour})">修改</button>
-          <button class="layui-btn layui-btn-danger" onclick="deletemachine(${machine.computerId})">删除</button>
+          <button class="layui-btn layui-btn-warm" onclick='editmachine(${machine.computerId}, "${machine.screenModel}", "${machine.cpuModel}", "${machine.gpuModel}", ${machine.costPerHour})'>修改</button>
+          <button class="layui-btn layui-btn-danger" onclick='deletemachine(${machine.computerId})'>删除</button>
         </td>
       `;
       roomList.appendChild(tr);
