@@ -97,8 +97,12 @@ layui.use(function(){
     elem: '#ID-laydate-range',
     type: 'datetime', 
     range: ['#ID-laydate-start-date', '#ID-laydate-end-date'],
-    onConfirm :function() {
-        console.log("ad");
+    onConfirm : function(value, data, endDate) {
+        var dates = value.split(' - ');
+        var startDate = dates[0];
+        var endDate = dates[1];
+        console.log(startDate);
+        console.log(endDate);
     }
   });
   
