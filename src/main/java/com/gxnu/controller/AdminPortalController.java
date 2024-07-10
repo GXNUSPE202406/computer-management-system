@@ -3,7 +3,6 @@ package com.gxnu.controller;
 import com.gxnu.pojo.Machine;
 import com.gxnu.pojo.PortalVo;
 import com.gxnu.pojo.Room;
-import com.gxnu.service.MachineInfoService;
 import com.gxnu.service.MachineService;
 import com.gxnu.service.RoomService;
 import com.gxnu.utils.Result;
@@ -32,10 +31,15 @@ public class AdminPortalController {
         return result;
     }
 
-    @PostMapping ("delMachine")
-    public Result delMachine(@RequestBody String computerId) {
+    @GetMapping ("delMachine/{computerId}")
+    public Result delMachine(@PathVariable String computerId) {
         Result result = machineService.delMachine(computerId);
         return result;
+    }
+
+    @PostMapping("modifyMachine")
+    public Result modifyMachine(@RequestBody Machine machine) {
+        return Result.ok(null);
     }
 
     @GetMapping("findAllRoom")
@@ -68,6 +72,9 @@ public class AdminPortalController {
 
     @GetMapping("findRoomMachines/{roomId}")
     public Result findRoomMachines(@PathVariable String roomId) {
+        if (roomId == null) {
+            return Result.fair(null);
+        }
         Result result = machineService.findRoomMachines(roomId);
         return result;
     }

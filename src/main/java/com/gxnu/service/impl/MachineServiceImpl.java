@@ -72,6 +72,7 @@ public class MachineServiceImpl extends ServiceImpl<MachineMapper, Machine>
 
     @Override
     public Result addMachine(Machine machine) {
+        System.out.println("Entering addMachine method with machine: " + machine);
         machineMapper.insert(machine);
 
         Room room = roomMapper.selectById(machine.getRoomId());
