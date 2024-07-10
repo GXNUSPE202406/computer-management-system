@@ -126,7 +126,7 @@ layui.use(['layer', 'table', 'laypage'], function(){
   window.editmachine = function(computerId, screenModel, cpuModel, gpuModel, costPerHour) {
     layer.open({
         type: 1,
-        title: '修改机房名称',
+        title: '修改',
         area: ['500px', '400px'],
         content: `
             <div style="padding: 20px;">
@@ -150,17 +150,18 @@ layui.use(['layer', 'table', 'laypage'], function(){
                 </form>
             </div>
         `,
-        btn: ['提交', '取消'],
+        btn: ['确定', '取消'],
         yes: function(index, layero) {
             var formData = new FormData(document.getElementById('modifyRoomForm'));
             var data = {
+                computerId: computerId,
                 screenModel: formData.get('screenModel'),
                 cpuModel: formData.get('cpuModel'),
                 gpuModel: formData.get('gpuModel'),
                 costPerHour: formData.get('costPerHour')
             };
 
-            fetch('http://localhost:8080/adminPortal/modifyMachine/' + computerId, {
+            fetch('http://localhost:8080/adminPortal/modifyMachine', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -191,7 +192,7 @@ layui.use(['layer', 'table', 'laypage'], function(){
 
   window.deletemachine = function(computerId) {
     layer.confirm('确定删除该机器吗？', function(index){
-        var url = `http://localhost:8080/adminPortal/delMachine?computerId=${computerId}`;
+        var url = `http://localhost:8080/adminPortal/delMachine/` + computerId;
       fetch(url, {
         method: 'GET'
       }).then(response => response.json())
@@ -209,29 +210,71 @@ layui.use(['layer', 'table', 'laypage'], function(){
     });
   }
 
-  // 添加机房
+  // 添加机房机器
   document.getElementById('add-room').addEventListener('click', function(){
-    layer.prompt({
-      formType: 0,
-      title: '请输入机房名称'
-    }, function(value, index){
-        var roomName = encodeURIComponent(value);
-        var url = `http://localhost:8080/adminPortal/addRoom?roomName=${roomName}`;
-      fetch(url, {
-        method: 'GET'
-      }).then(response => response.json())
-        .then(data => {
-          if (data.code === 200) {
-            layer.msg('添加成功');
-            setTimeout(function() {
-                location.reload();
-            }, 2000);
-          } else {
-            layer.msg('添加失败');
-          }
-        });
-      layer.close(index);
-    });
+    layer.open({
+        type: 1,
+        title: '添加',
+        area: ['500px', '400px'],
+        content: `
+            <div style="padding: 20px;">
+                <form id="addRoomForm">
+                    <div>
+                        <label for="screenModel">显示器:</label>
+                        <input type="text" id="screenModel" name="screenModel" required>
+                    </div>
+                    <div>
+                        <label for="cpuModel">CPU型号:</label>
+                        <input type="text" id="cpuModel" name="cpuModel"  required>
+                    </div>
+                    <div>
+                        <label for="gpuModel">GPU型号:</label>
+                        <input type="text" id="gpuModel" name="gpuModel" required>
+                    </div>
+                    <div>
+                        <label for="costPerHour">每小时成本:</label>
+                        <input type="text" id="costPerHour" name="costPerHour"  required>
+                    </div>
+                </form>
+            </div>
+        `,
+        btn: ['确定', '取消'],
+        yes: function(index, layero) {
+            var formData = new FormData(document.getElementById('addRoomForm'));
+            var data = {
+                screenModel: formData.get('screenModel'),
+                cpuModel: formData.get('cpuModel'),
+                gpuModel: formData.get('gpuModel'),
+                costPerHour: formData.get('costPerHour')
+            };
+
+            fetch('http://localhost:8080/adminPortal/addMachine', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.code === 200) {
+                layer.msg('修改成功');
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+                layer.close(index);
+              } else {
+                layer.msg('修改失败');
+              }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        },
+        btn2: function(index, layero) {
+            layer.close(index);
+        }
+    });  
   });
 });
 </script>

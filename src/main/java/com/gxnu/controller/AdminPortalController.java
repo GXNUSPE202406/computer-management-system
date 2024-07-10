@@ -39,7 +39,8 @@ public class AdminPortalController {
 
     @PostMapping("modifyMachine")
     public Result modifyMachine(@RequestBody Machine machine) {
-        return Result.ok(null);
+        Result result = machineService.modifyMachine(machine);
+        return result;
     }
 
     @GetMapping("findAllRoom")

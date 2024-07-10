@@ -21,4 +21,6 @@ public interface MachineService extends IService<Machine> {
     Result delMachine(String computerId);
 
     Result findRoomMachines(String roomId);
+
+    Result modifyMachine(Machine machine);
 }

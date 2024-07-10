@@ -103,6 +103,16 @@ public class MachineServiceImpl extends ServiceImpl<MachineMapper, Machine>
         return Result.build(map, ResultCodeEnum.SUCCESS);
     }
 
+    @Override
+    public Result modifyMachine(Machine machine) {
+        int row = machineMapper.updateById(machine);
+        if (row <= 0) {
+            return Result.fair(null);
+        }
+
+        return Result.ok(null);
+    }
+
 }
 
 
