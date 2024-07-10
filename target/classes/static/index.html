@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>机房信息管理系统</title>
+  <!-- 请勿在项目正式环境中引用该 layui.css 地址 -->
+  <link href="//unpkg.com/layui@2.9.13/dist/css/layui.css" rel="stylesheet">
+</head>
+
+<body>
+  <style>
+    body {
+      background: #1e1e2f;
+    }
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 100px;
+      text-align: center;
+      color: white;
+    }
+    .container img {
+      width: 120px;
+      border-radius: 50%;
+      margin-bottom: 20px;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    p {
+      margin-bottom: 50px;
+      color: #b0b0b0;
+    }
+    .login-form {
+      width: 250px;
+      margin: 0 auto;
+      padding: 40px 40px 20px;
+      background: #333;
+      border-radius: 10px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    }
+    .layui-btn {
+      background-color: #626e72; /*更改按钮的颜色*/
+    }
+    .layui-form-item {
+      margin-bottom: 40px; /*增大按钮间距*/
+    }
+  </style>
+
+  <div class="container">
+    <img src="/computer manager/img/3.jpg" alt="Logo"> <!-- 添加自己的logo -->
+    <h1>机房信息管理系统</h1>
+    <p>Student and Administrator Login</p>
+    <div class="login-form">
+      <div class="layui-form-item">
+        <button class="layui-btn layui-btn-fluid" id="student-login">学生登录</button>
+      </div>
+      <div class="layui-form-item">
+        <button class="layui-btn layui-btn-fluid layui-btn-normal" id="admin-login">管理员登录</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 请勿在项目正式环境中引用该 layui.js 地址 -->
+  <script src="//unpkg.com/layui@2.9.13/dist/layui.js"></script>
+  <script>
+    layui.use(['layer'], function () {
+      var layer = layui.layer;
+
+      document.getElementById('student-login').onclick = function () {
+        window.location.href = 'StudentLogin.html';
+      };
+
+      document.getElementById('admin-login').onclick = function () {
+        window.location.href = 'AdminLogin.html';
+      };
+    });
+  </script>
+</body>
+
+</html>

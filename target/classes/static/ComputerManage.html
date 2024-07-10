@@ -242,6 +242,7 @@ layui.use(['layer', 'table', 'laypage'], function(){
         yes: function(index, layero) {
             var formData = new FormData(document.getElementById('addRoomForm'));
             var data = {
+                roomId: roomId,
                 screenModel: formData.get('screenModel'),
                 cpuModel: formData.get('cpuModel'),
                 gpuModel: formData.get('gpuModel'),
