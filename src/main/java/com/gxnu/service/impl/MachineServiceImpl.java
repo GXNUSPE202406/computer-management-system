@@ -113,6 +113,16 @@ public class MachineServiceImpl extends ServiceImpl<MachineMapper, Machine>
         return Result.ok(null);
     }
 
+    @Override
+    public Machine findMachine(Integer machineId) {
+        LambdaQueryWrapper<Machine> queryWrapper = new LambdaQueryWrapper();
+        queryWrapper.eq(Machine::getComputerId, machineId);
+
+        Machine machine = machineMapper.selectOne(queryWrapper);
+
+        return machine;
+    }
+
 }
 
 

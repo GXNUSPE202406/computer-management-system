@@ -1,15 +1,23 @@
 package com.gxnu.controller;
 
+import com.gxnu.DTO.TotalInfo;
+import com.gxnu.DTO.TotalRequest;
 import com.gxnu.pojo.Machine;
 import com.gxnu.pojo.PortalVo;
+import com.gxnu.pojo.Record;
 import com.gxnu.pojo.Room;
 import com.gxnu.service.MachineService;
+import com.gxnu.service.RecordService;
 import com.gxnu.service.RoomService;
+import com.gxnu.service.StudentService;
 import com.gxnu.utils.Result;
+import com.gxnu.utils.ResultCodeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +32,12 @@ public class AdminPortalController {
 
     @Autowired
     private MachineService machineService;
+
+    @Autowired
+    private RecordService recordService;
+
+    @Autowired
+    private StudentService studentService;
 
 
     @PostMapping ("addMachine")
@@ -88,14 +102,43 @@ public class AdminPortalController {
     }
 
     @PostMapping("total")
-    public Result findTotal(@RequestBody Integer roomId,
-                            @RequestBody Timestamp starDate,
-                            @RequestBody Timestamp endDate) {
+    public Result findTotal(@RequestBody TotalRequest totalRequest) {
+        Integer roomId = Integer.parseInt(totalRequest.getRoomId());
+        Timestamp starDate = Timestamp.valueOf(totalRequest.getStartDate());
+        Timestamp endDate = Timestamp.valueOf(totalRequest.getEndDate());
 
-        System.out.println(roomId);
-        System.out.println(starDate);
-        System.out.println(endDate);
+//        System.out.println(roomId);
+//        System.out.println(starDate);
+//        System.out.println(endDate);
 
-        return null;
+        List<Record> list = recordService.getRecordsBetweenDates(roomId, starDate, endDate);
+        List<TotalInfo> resultList = new ArrayList<>();
+
+        // 创建一个 SimpleDateFormat 对象，指定日期格式
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        int count = list.size();
+
+        list.forEach(e -> {
+            TotalInfo totalInfo = new TotalInfo();
+            Integer studentId = e.getStudentId();
+            String studentName = studentService.findStuName(studentId);
+            Integer machineId = e.getComputerId();
+            Machine machine = machineService.findMachine(machineId);
+            totalInfo.setBeginTime(dateFormat.format(e.getBeginTime()));
+            totalInfo.setEndTime(dateFormat.format(e.getEndTime()));
+            totalInfo.setCost(e.getCost());
+            totalInfo.setCpuModel(machine.getCpuModel());
+            totalInfo.setGpuModel(machine.getGpuModel());
+            totalInfo.setUserName(studentName);
+            totalInfo.setScreenModel(machine.getScreenModel());
+            resultList.add(totalInfo);
+        });
+
+        Map map = new HashMap<>();
+        map.put("data", resultList);
+        map.put("count", count);
+
+        return Result.build(map, ResultCodeEnum.SUCCESS);
     }
 }

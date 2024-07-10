@@ -78,6 +78,25 @@
           </div>
         
         </div>
+
+        <div class="layui-body">
+            <div class="layui-container">
+              <table class="layui-table">
+                <thead>
+                  <tr>
+                    <th>序号</th>
+                    <th>机房名称</th>
+                    <th>机器数量</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="total-list">
+                  <!-- 机房信息将插入到这里 -->
+                </tbody>
+              </table>
+              <div id="pagination"></div>
+            </div>
+          </div>
   </div>
   
   <div class="layui-footer">
@@ -126,7 +145,7 @@ layui.use(function(){
         if (data.code === 200) {
 
 
-            
+
         } else {
 
         }

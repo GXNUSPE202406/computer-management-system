@@ -78,6 +78,28 @@
           </div>
         
         </div>
+
+        <div class="layui-body">
+            <div class="layui-container">
+              <table class="layui-table">
+                <thead>
+                  <tr>
+                    <th>使用者</th>
+                    <th>显示器</th>
+                    <th>cpu</th>
+                    <th>显卡</th>
+                    <th>上机时间</th>
+                    <th>下机时间</th>
+                    <th>花费</th>
+                  </tr>
+                </thead>
+                <tbody id="total-list">
+                  <!-- 机房信息将插入到这里 -->
+                </tbody>
+              </table>
+              <div id="pagination"></div>
+            </div>
+          </div>
   </div>
   
   <div class="layui-footer">
@@ -124,19 +146,55 @@ layui.use(function(){
       .then(data => {
         console.log(data);
         if (data.code === 200) {
+            var rooms = data.data.data;
+            var count = data.data.count;
 
-
-            
+            // 初始化分页
+            laypage.render({
+            elem: 'pagination',
+            count: count,
+            limit: 10,
+            jump: function(obj, first){
+                if(!first){
+                renderRoomList(rooms.slice((obj.curr - 1) * obj.limit, obj.curr * obj.limit), obj.curr, obj.limit);
+                }
+            }
+            });
+            // 初始渲染第一页
+            renderRoomList(rooms.slice(0, 10), 1, 10);
         } else {
-
+            layer.msg('获取信息失败');
         }
       })
       .catch(error => {
         console.error('Error:', error);
         // 处理错误
       });
+
+
+
+  function renderRoomList(rooms, currentPage, limit) {
+    var roomList = document.getElementById('total-list');
+    roomList.innerHTML = '';
+    rooms.forEach((room, index) => {
+      var tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${room.userName}</td>
+        <td>${room.screenModel}</td>
+        <td>${room.cpuModel}</td>
+        <td>${room.gpuModel}</td>
+        <td>${room.beginTime}</td>
+        <td>${room.endTime}</td>
+        <td>${room.cost}</td>
+      `;
+      roomList.appendChild(tr);
+    });
+  }
+      
     }
   });
+
+
   
 });
 

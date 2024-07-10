@@ -21,4 +21,6 @@ public interface StudentService extends IService<Student> {
     Result checkStuEmail(String stuEmail);
 
     Result regist(Student student);
+
+    String findStuName(Integer studentId);
 }

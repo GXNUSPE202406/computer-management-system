@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 
 @Data
 public class TotalInfo {
-    private String useName;
+    private String userName;
 
     private String screenModel;
 
@@ -14,9 +14,9 @@ public class TotalInfo {
 
     private String gpuModel;
 
-    private Timestamp beginTime;
+    private String beginTime;
 
-    private Timestamp endTime;
+    private String endTime;
 
     private Integer cost;
 }

@@ -112,6 +112,16 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student>
 
         return Result.ok(null);
     }
+
+    @Override
+    public String findStuName(Integer studentId) {
+        LambdaQueryWrapper<Student> queryWrapper = new LambdaQueryWrapper();
+        queryWrapper.eq(Student::getStudentId, studentId);
+
+        Student student = studentMapper.selectOne(queryWrapper);
+
+        return student.getStudentName();
+    }
 }
 
 

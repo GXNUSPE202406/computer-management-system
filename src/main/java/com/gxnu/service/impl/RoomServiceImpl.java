@@ -39,7 +39,8 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room>
     @Override
     public Result modifyRoom(String roomId, String roomName) {
         LambdaUpdateWrapper<Room> updateWrapper = new LambdaUpdateWrapper<>();
-        updateWrapper.eq(Room::getRoomId, Integer.parseInt(roomId)).set(Room::getRoomName,roomName);
+        updateWrapper.eq(Room::getRoomId, Integer.parseInt(roomId))
+                .set(Room::getRoomName,roomName);
 
         this.update(null, updateWrapper);
 
