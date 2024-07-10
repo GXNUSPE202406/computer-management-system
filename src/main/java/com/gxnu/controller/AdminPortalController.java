@@ -9,6 +9,7 @@ import com.gxnu.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,5 +85,17 @@ public class AdminPortalController {
     public Result findNewPage(@RequestBody PortalVo portalVo){
         Result result = machineService.findNewPage(portalVo);
         return result;
+    }
+
+    @PostMapping("total")
+    public Result findTotal(@RequestBody Integer roomId,
+                            @RequestBody Timestamp starDate,
+                            @RequestBody Timestamp endDate) {
+
+        System.out.println(roomId);
+        System.out.println(starDate);
+        System.out.println(endDate);
+
+        return null;
     }
 }

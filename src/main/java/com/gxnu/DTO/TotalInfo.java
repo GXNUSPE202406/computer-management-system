@@ -5,7 +5,7 @@ import lombok.Data;
 import java.sql.Timestamp;
 
 @Data
-public class totalInfo {
+public class TotalInfo {
     private String useName;
 
     private String screenModel;
