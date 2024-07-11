@@ -1,5 +1,6 @@
 package com.gxnu.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gxnu.pojo.Room;
@@ -45,6 +46,16 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room>
         this.update(null, updateWrapper);
 
         return Result.ok(null);
+    }
+
+    @Override
+    public String findRoomNameById(Integer roomId) {
+        LambdaQueryWrapper<Room> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Room::getRoomId, roomId);
+
+        Room room = roomMapper.selectOne(queryWrapper);
+
+        return room.getRoomName();
     }
 }
 

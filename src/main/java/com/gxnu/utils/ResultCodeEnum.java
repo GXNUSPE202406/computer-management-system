@@ -8,11 +8,13 @@ public enum ResultCodeEnum {
 
     SUCCESS(200,"success"),
     FAIR(201,"fail"),
+    NULL(202,"null"),
     USERNAME_ERROR(501,"usernameError"),
     PASSWORD_ERROR(503,"passwordError"),
     NOTLOGIN(504,"notLogin"),
     USERNAME_USED(505,"userNameUsed"),
     CODE_EXIST(506,"codeExist");
+
 
     private Integer code;
     private String message;

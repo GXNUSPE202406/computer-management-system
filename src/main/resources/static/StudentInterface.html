@@ -36,10 +36,7 @@
           <a href="javascript:;" id="home-link">首页</a>
         </li>
         <li class="layui-nav-item">
-          <a href="javascript:;">机器信息管理</a>
-        </li>
-        <li class="layui-nav-item">
-          <a href="javascript:;">机房信息统计</a>
+          <a href="javascript:;">申请机器</a>
         </li>
       </ul>
     </div>
@@ -60,8 +57,11 @@
 <!-- <script src="//unpkg.com/layui@2.9.13/dist/layui.js"></script> -->
 <script src="layui/layui.js"></script>
 <script>
-layui.use('element', function(){
-  var element = layui.element;
+layui.use(['element', 'table', 'laypage', 'layer'], function(){
+    var element = layui.element;
+    var table = layui.table;
+    var laypage = layui.laypage;
+    var layer = layui.layer;
   
   // 一些事件监听
   element.on('nav(admin-nav)', function(elem){
@@ -73,33 +73,30 @@ layui.use('element', function(){
       case '首页':
         loadHomePage();
         break;
-      case '机器信息管理':
+      case '申请机器':
         loadMachineInfoPage();
-        break;
-      case '机房信息统计':
-        loadRoomInfoPage();
         break;
       default:
         loadHomePage();
     }
   });
+  // 加载首页内容
+    function loadHomePage() {
+    document.getElementById('content').innerHTML = `
+        <span id="ues"><h1>您目前申请使用的机器如下：</h1></span>
+        <table class="layui-table" id="machine-table"></table>
+        <div id="pagination"></div>
+    `;
+    fetchMachineInfo();
+    }
+
+    // 加载申请机器内容
+    function loadMachineInfoPage() {
+    document.getElementById('content').innerHTML = `
+        <h1>机器信息管理</h1><p>这里是机器信息管理内容</p>
+    `;
+    }
 });
-
-// 加载首页内容
-function loadHomePage() {
-  document.getElementById('content').innerHTML = '<h1>首页</h1><p>欢迎来到首页</p>';
-}
-
-// 加载机器信息管理内容
-function loadMachineInfoPage() {
-  document.getElementById('content').innerHTML = '<h1>机器信息管理</h1><p>这里是机器信息管理内容</p>';
-}
-
-// 加载机房信息统计内容
-function loadRoomInfoPage() {
-  document.getElementById('content').innerHTML = '<h1>机房信息统计</h1><p>这里是机房信息统计内容</p>';
-}
-
 document.addEventListener('DOMContentLoaded', async function() {
   var token = localStorage.getItem('token');
   
@@ -135,10 +132,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        studentId: studentInfo.studentId,
-        studentNumber: studentInfo.studentNumber,
-        studentEmail: studentInfo.studentEmail,
-        studentName: studentInfo.studentName,
+        studentId: studentInfo.data.loginStu.studentId,
+        studentNumber: studentInfo.data.loginStu.studentNumber,
+        studentEmail: studentInfo.data.loginStu.studentEmail,
+        studentName: studentInfo.data.loginStu.studentName,
       })
     });
 
@@ -146,17 +143,18 @@ document.addEventListener('DOMContentLoaded', async function() {
     // 处理第二个请求的响应数据
     console.log(otherInfo);
     if (otherInfo.code === 200) {
-        console.log("yes");
+        console.log(otherInfo);
+        console.log(studentInfo);
     }
 
-    document.getElementById('home-link').click();
+    
 
   } catch(error) {
     console.error(error);
     // 处理错误，重定向到登录页面
     window.location.href = 'StudentLogin.html';
   }
-
+document.getElementById('home-link').click();
 });
 </script>
 </body>

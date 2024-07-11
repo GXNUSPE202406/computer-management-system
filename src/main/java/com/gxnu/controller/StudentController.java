@@ -1,8 +1,12 @@
 package com.gxnu.controller;
 
+import com.gxnu.DTO.ApplicationInfo;
+import com.gxnu.pojo.Machine;
 import com.gxnu.pojo.Student;
 import com.gxnu.pojo.StudentRegistrationRequest;
 import com.gxnu.pojo.WorkOrder;
+import com.gxnu.service.MachineService;
+import com.gxnu.service.RoomService;
 import com.gxnu.service.StudentService;
 import com.gxnu.service.WorkOrderService;
 import com.gxnu.utils.MailMsg;
@@ -14,8 +18,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
 @RequestMapping("student")
@@ -33,6 +37,12 @@ public class StudentController {
 
     @Autowired
     private WorkOrderService workOrderService;
+
+    @Autowired
+    private MachineService machineService;
+
+    @Autowired
+    private RoomService roomService;
 
 
     //登录
@@ -92,9 +102,46 @@ public class StudentController {
     @PostMapping("useMachineInfo")
     public Result useMachineInfo(@RequestBody Student student) {
 
-        Result result = workOrderService.findByStuId(student.getStudentId());
+        List<WorkOrder> list = workOrderService.findByStuId(student.getStudentId());
+        List<ApplicationInfo> resultList = new ArrayList<>();
+        int count = list.size();
 
-        return result;
+        if (count == 0) {
+            Result.build(null, ResultCodeEnum.NULL);
+        }
+
+        Date date = new Date();
+        // 创建一个SimpleDateFormat对象，指定日期格式
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        for (WorkOrder e : list) {
+            ApplicationInfo applicationInfo = new ApplicationInfo();
+            applicationInfo.setWorkId(e.getWorkId());
+
+            Machine machine = machineService.findMachine(e.getComputerId());
+
+            applicationInfo.setGpuModel(machine.getGpuModel());
+            applicationInfo.setCpuModel(machine.getCpuModel());
+            applicationInfo.setScreenModel(machine.getScreenModel());
+
+            String roomName = roomService.findRoomNameById(e.getRoomId());
+            applicationInfo.setRoomName(roomName);
+
+            String beginTime = formatter.format(e.getBeginTime());
+            applicationInfo.setBeginTime(beginTime);
+
+            long d = date.getTime() - e.getBeginTime().getTime();
+            long hour = (long) Math.ceil((double) d / (1000 * 60 * 60));
+            applicationInfo.setCost((int)hour);
+
+            resultList.add(applicationInfo);
+        }
+
+        Map map = new HashMap<>();
+        map.put("data", resultList);
+        map.put("count", count);
+
+        return Result.build(map, ResultCodeEnum.SUCCESS);
     }
 
 }

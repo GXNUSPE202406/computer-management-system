@@ -16,4 +16,6 @@ public interface RoomService extends IService<Room> {
     Result delRoom(String roomId);
 
     Result modifyRoom(String roomId, String roomName);
+
+    String findRoomNameById(Integer roomId);
 }

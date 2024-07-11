@@ -2,7 +2,8 @@ package com.gxnu.service;
 
 import com.gxnu.pojo.WorkOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.gxnu.utils.Result;
+
+import java.util.List;
 
 /**
 * @author 王功磊
@@ -11,5 +12,5 @@ import com.gxnu.utils.Result;
 */
 public interface WorkOrderService extends IService<WorkOrder> {
 
-    Result findByStuId(Integer studentId);
+    List<WorkOrder> findByStuId(Integer studentId);
 }

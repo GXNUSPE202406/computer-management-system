@@ -114,9 +114,9 @@ public class MachineServiceImpl extends ServiceImpl<MachineMapper, Machine>
     }
 
     @Override
-    public Machine findMachine(Integer machineId) {
+    public Machine findMachine(Integer computerId) {
         LambdaQueryWrapper<Machine> queryWrapper = new LambdaQueryWrapper();
-        queryWrapper.eq(Machine::getComputerId, machineId);
+        queryWrapper.eq(Machine::getComputerId, computerId);
 
         Machine machine = machineMapper.selectOne(queryWrapper);
 
