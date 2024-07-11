@@ -1,1 +1,163 @@
-aaa
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>学生界面</title>
+  <!-- 请勿在项目正式环境中引用该 layui.css 地址 -->
+  <!-- <link href="//unpkg.com/layui@2.9.13/dist/css/layui.css" rel="stylesheet"> -->
+  <link rel="stylesheet" href="layui/css/layui.css">
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+  <div class="layui-header">
+    <div class="layui-logo">学生界面</div>
+    <!-- 头部区域（可配合layui已有的水平导航） -->
+    <ul class="layui-nav layui-layout-right">
+      <li class="layui-nav-item">
+        <a href="javascript:;">
+          <img src="/computer manager/img/1.png" class="layui-nav-img" id="user-avatar">
+          <span id="username">null</span>
+        </a>
+        <dl class="layui-nav-child">
+          <dd><a href="">基本资料</a></dd>
+          <dd><a href="">安全设置</a></dd>
+        </dl>
+      </li>
+      <li class="layui-nav-item"><a href="AdminLogin.html">退出</a></li>
+    </ul>
+  </div>
+  
+  <div class="layui-side layui-bg-black">
+    <div class="layui-side-scroll">
+      <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+      <ul class="layui-nav layui-nav-tree" lay-filter="admin-nav">
+        <li class="layui-nav-item">
+          <a href="javascript:;" id="home-link">首页</a>
+        </li>
+        <li class="layui-nav-item">
+          <a href="javascript:;">机器信息管理</a>
+        </li>
+        <li class="layui-nav-item">
+          <a href="javascript:;">机房信息统计</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="layui-body">
+    <!-- 内容主体区域 -->
+    <div id="content" style="padding: 15px;"></div>
+  </div>
+  
+  <div class="layui-footer">
+    <!-- 底部固定区域 -->
+    ©  - 底部固定区域
+  </div>
+</div>
+
+<!-- 请勿在项目正式环境中引用该 layui.js 地址 -->
+<!-- <script src="//unpkg.com/layui@2.9.13/dist/layui.js"></script> -->
+<script src="layui/layui.js"></script>
+<script>
+layui.use('element', function(){
+  var element = layui.element;
+  
+  // 一些事件监听
+  element.on('nav(admin-nav)', function(elem){
+    // 获取点击的菜单项的文本
+    var menuItem = elem.text().trim();
+    
+    // 根据菜单项的文本加载不同的内容
+    switch(menuItem) {
+      case '首页':
+        loadHomePage();
+        break;
+      case '机器信息管理':
+        loadMachineInfoPage();
+        break;
+      case '机房信息统计':
+        loadRoomInfoPage();
+        break;
+      default:
+        loadHomePage();
+    }
+  });
+});
+
+// 加载首页内容
+function loadHomePage() {
+  document.getElementById('content').innerHTML = '<h1>首页</h1><p>欢迎来到首页</p>';
+}
+
+// 加载机器信息管理内容
+function loadMachineInfoPage() {
+  document.getElementById('content').innerHTML = '<h1>机器信息管理</h1><p>这里是机器信息管理内容</p>';
+}
+
+// 加载机房信息统计内容
+function loadRoomInfoPage() {
+  document.getElementById('content').innerHTML = '<h1>机房信息统计</h1><p>这里是机房信息统计内容</p>';
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+  var token = localStorage.getItem('token');
+  
+  if (!token) {
+    // 如果没有token，重定向到登录页面
+    window.location.href = 'StudentLogin.html';
+    return;
+  }
+
+  try {
+    // 第一个请求
+    let response = await fetch('http://localhost:8080/student/getStuInfo', {
+      method: 'GET',
+      headers: {
+        'token': token,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    let studentInfo = await response.json();
+
+    if (studentInfo.code === 200) {
+        // 更新用户名
+        document.getElementById('username').textContent = studentInfo.data.loginStu.studentName;
+    } else {
+        window.location.href = 'StudentLogin.html';
+    }
+
+    // 发送第二个请求，携带第一个请求返回的数据
+    response = await fetch('http://localhost:8080/student/useMachineInfo', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        studentId: studentInfo.studentId,
+        studentNumber: studentInfo.studentNumber,
+        studentEmail: studentInfo.studentEmail,
+        studentName: studentInfo.studentName,
+      })
+    });
+
+    let otherInfo = await response.json();
+    // 处理第二个请求的响应数据
+    console.log(otherInfo);
+    if (otherInfo.code === 200) {
+        console.log("yes");
+    }
+
+    document.getElementById('home-link').click();
+
+  } catch(error) {
+    console.error(error);
+    // 处理错误，重定向到登录页面
+    window.location.href = 'StudentLogin.html';
+  }
+
+});
+</script>
+</body>
+</html>

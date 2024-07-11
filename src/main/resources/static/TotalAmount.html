@@ -4,15 +4,27 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>管理员界面</title>
-  <!-- 请勿在项目正式环境中引用该 layui.css 地址 -->
-  <!-- <link href="//unpkg.com/layui@2.9.13/dist/css/layui.css" rel="stylesheet"> -->
   <link rel="stylesheet" href="layui/css/layui.css">
+  <style>
+    .total-container {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .total-container .layui-form-mid {
+      margin-left: 10px;
+    }
+    .total-container .layui-input {
+      width: 100px;
+    }
+  </style>
+
 </head>
 <body>
 <div class="layui-layout layui-layout-admin">
   <div class="layui-header">
     <div class="layui-logo">管理员界面</div>
-    <!-- 头部区域（可配合layui已有的水平导航） -->
     <ul class="layui-nav layui-layout-right">
       <li class="layui-nav-item">
         <a href="javascript:;">
@@ -30,7 +42,6 @@
   
   <div class="layui-side layui-bg-black">
     <div class="layui-side-scroll">
-      <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
       <ul class="layui-nav layui-nav-tree" lay-filter="admin-nav">
         <li class="layui-nav-item">
           <a href="AdminInterface.html">首页</a>
@@ -44,139 +55,136 @@
       </ul>
     </div>
   </div>
-  
+
   <div class="layui-body">
-    <!-- 内容主体区域 -->
-    <div style="padding: 15px;">
-        
+    <div class="layui-container">
+      <div style="padding: 15px;">
         <div class="layui-form-item">
+          <div class="layui-inline">
+            
+            <label class="layui-form-label">日期范围</label>
 
-            <div class="layui-inline">
-        
-              <label class="layui-form-label">日期范围</label>
-        
-              <div class="layui-inline" id="ID-laydate-range">
-        
-                <div class="layui-input-inline">
-        
-                  <input type="text" autocomplete="off" id="ID-laydate-start-date" class="layui-input" placeholder="开始日期">
-        
-                </div>
-        
-                <div class="layui-form-mid">-</div>
-        
-                <div class="layui-input-inline">
-        
-                  <input type="text" autocomplete="off" id="ID-laydate-end-date" class="layui-input" placeholder="结束日期">
-        
-                </div>
-        
+            <div class="layui-inline" id="ID-laydate-range">
+              <div class="layui-input-inline">
+                <input type="text" autocomplete="off" id="ID-laydate-start-date" class="layui-input" placeholder="开始日期">
               </div>
-        
+              <div class="layui-form-mid">-</div>
+              <div class="layui-input-inline">
+                <input type="text" autocomplete="off" id="ID-laydate-end-date" class="layui-input" placeholder="结束日期">
+              </div>
             </div>
-        
           </div>
-        
-        </div>
 
-        <div class="layui-body">
-            <div class="layui-container">
-              <table class="layui-table">
-                <thead>
-                  <tr>
-                    <th>使用者</th>
-                    <th>显示器</th>
-                    <th>cpu</th>
-                    <th>显卡</th>
-                    <th>上机时间</th>
-                    <th>下机时间</th>
-                    <th>花费</th>
-                  </tr>
-                </thead>
-                <tbody id="total-list">
-                  <!-- 机房信息将插入到这里 -->
-                </tbody>
-              </table>
-              <div id="pagination"></div>
+          <div class="layui-form-label">合计:</div>
+            <div class="layui-input-inline">
+              <input type="text" id="all" disabled class="layui-input">
             </div>
+          <div class="total-container">
+            
           </div>
+        </div>
+      </div>
+      
+      <table class="layui-table">
+        <thead>
+          <tr>
+            <th>使用者</th>
+            <th>显示器</th>
+            <th>cpu</th>
+            <th>显卡</th>
+            <th>上机时间</th>
+            <th>下机时间</th>
+            <th>花费</th>
+          </tr>
+        </thead>
+        <tbody id="total-list">
+          <!-- 机房信息将插入到这里 -->
+        </tbody>
+      </table>
+      <div id="pagination"></div>
+    </div>
   </div>
-  
   <div class="layui-footer">
-    <!-- 底部固定区域 -->
     ©  - 底部固定区域
   </div>
+
+
+
 </div>
 
-<!-- 请勿在项目正式环境中引用该 layui.js 地址 -->
-<!-- <script src="//unpkg.com/layui@2.9.13/dist/layui.js"></script> -->
 <script src="layui/layui.js"></script>
 <script>
-layui.use(function(){
+layui.use(['layer', 'laydate', 'laypage'], function(){
   var laydate = layui.laydate;
+  var laypage = layui.laypage;
+  var layer = layui.layer;
+
   // 日期范围 - 左右面板独立选择模式
   laydate.render({
     elem: '#ID-laydate-range',
     type: 'datetime', 
     range: ['#ID-laydate-start-date', '#ID-laydate-end-date'],
-    onConfirm : function(value, data, endDate) {
-        var dates = value.split(' - ');
-        var startDate = dates[0];
-        var endDate = dates[1];
+    onConfirm: function(value) {
+      var dates = value.split(' - ');
+      var startDate = dates[0];
+      var endDate = dates[1];
 
-        // 获取URL中的roomId参数
-        var urlParams = new URLSearchParams(window.location.search);
-        var roomId = urlParams.get('roomId');
+      // 获取URL中的roomId参数
+      var urlParams = new URLSearchParams(window.location.search);
+      var roomId = urlParams.get('roomId');
 
-        var url = 'http://localhost:8080/adminPortal/total';
-        
-        // 发送 fetch 请求到后端
-        fetch(url, { 
+      var url = 'http://localhost:8080/adminPortal/total';
+      
+      // 发送 fetch 请求到后端
+      fetch(url, { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            roomId: roomId,
-            startDate: startDate,
-            endDate: endDate
+          roomId: roomId,
+          startDate: startDate,
+          endDate: endDate
         })
       })
       .then(response => response.json())
       .then(data => {
-        console.log(data);
         if (data.code === 200) {
-            var rooms = data.data.data;
-            var count = data.data.count;
+          var rooms = data.data.data;
+          var count = data.data.count;
+          var all = data.data.all;
 
-            // 初始化分页
-            laypage.render({
+          document.getElementById("all").value = all;
+
+          // 初始化分页
+          laypage.render({
             elem: 'pagination',
             count: count,
             limit: 10,
             jump: function(obj, first){
-                if(!first){
+              if(!first){
                 renderRoomList(rooms.slice((obj.curr - 1) * obj.limit, obj.curr * obj.limit), obj.curr, obj.limit);
-                }
+              }
             }
-            });
-            // 初始渲染第一页
-            renderRoomList(rooms.slice(0, 10), 1, 10);
+          });
+          // 初始渲染第一页
+          renderRoomList(rooms.slice(0, 10), 1, 10);
+          layer.msg('查询成功');
         } else {
-            layer.msg('获取信息失败');
+          layer.msg('获取信息失败');
         }
       })
       .catch(error => {
         console.error('Error:', error);
-        // 处理错误
+        layer.msg('请求失败');
       });
-
-
+    }
+  });
 
   function renderRoomList(rooms, currentPage, limit) {
     var roomList = document.getElementById('total-list');
     roomList.innerHTML = '';
-    rooms.forEach((room, index) => {
+    rooms.forEach((room) => {
       var tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${room.userName}</td>
@@ -190,14 +198,7 @@ layui.use(function(){
       roomList.appendChild(tr);
     });
   }
-      
-    }
-  });
-
-
-  
 });
-
 </script>
 </body>
 </html>

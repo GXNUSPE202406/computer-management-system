@@ -2,7 +2,9 @@ package com.gxnu.controller;
 
 import com.gxnu.pojo.Student;
 import com.gxnu.pojo.StudentRegistrationRequest;
+import com.gxnu.pojo.WorkOrder;
 import com.gxnu.service.StudentService;
+import com.gxnu.service.WorkOrderService;
 import com.gxnu.utils.MailMsg;
 import com.gxnu.utils.Result;
 import com.gxnu.utils.ResultCodeEnum;
@@ -28,6 +30,9 @@ public class StudentController {
 
     @Autowired
     private MailMsg mailMsg;
+
+    @Autowired
+    private WorkOrderService workOrderService;
 
 
     //登录
@@ -82,6 +87,14 @@ public class StudentController {
             return Result.ok(null);
         }
         return Result.fair(null);
+    }
+
+    @PostMapping("useMachineInfo")
+    public Result useMachineInfo(@RequestBody Student student) {
+
+        Result result = workOrderService.findByStuId(student.getStudentId());
+
+        return result;
     }
 
 }

@@ -118,8 +118,9 @@ public class AdminPortalController {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         int count = list.size();
+        int all = 0;
 
-        list.forEach(e -> {
+        for (Record e : list) {
             TotalInfo totalInfo = new TotalInfo();
             Integer studentId = e.getStudentId();
             String studentName = studentService.findStuName(studentId);
@@ -132,12 +133,14 @@ public class AdminPortalController {
             totalInfo.setGpuModel(machine.getGpuModel());
             totalInfo.setUserName(studentName);
             totalInfo.setScreenModel(machine.getScreenModel());
+            all += e.getCost();
             resultList.add(totalInfo);
-        });
+        }
 
         Map map = new HashMap<>();
         map.put("data", resultList);
         map.put("count", count);
+        map.put("all", all);
 
         return Result.build(map, ResultCodeEnum.SUCCESS);
     }

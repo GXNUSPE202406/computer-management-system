@@ -79,7 +79,15 @@
                 .then(response => response.json()) // 解析 JSON 响应
                 .then(data => {
                     if (data.code==200) { // 假设返回的 JSON 对象中有一个 success 字段表示登录是否成功
+
+                        const token = data.data.token;
+                        console.log(token);
+
+                        // 保存 token
+                        localStorage.setItem('token', token);
+
                         window.location.href = 'StudentInterface.html'; // 登录成功，跳转到 StudentInterface.html
+
                     } else if(data.code==501) {
                         layer.msg('登录失败，邮箱不存在'); // 显示错误信息
                     }else{
