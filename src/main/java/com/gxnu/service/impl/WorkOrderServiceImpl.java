@@ -33,6 +33,47 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         return list;
     }
+
+    @Override
+    public Result del(WorkOrder workOrder) {
+        LambdaQueryWrapper<WorkOrder> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(WorkOrder::getWorkId, workOrder.getWorkId());
+        workOrderMapper.delete(queryWrapper);
+        return Result.ok(null);
+    }
+
+    @Override
+    public WorkOrder findById(Integer workId) {
+        LambdaQueryWrapper<WorkOrder> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(WorkOrder::getWorkId, workId);
+
+        WorkOrder workOrder = workOrderMapper.selectOne(queryWrapper);
+
+        System.out.println("tt");
+
+        return workOrder;
+    }
+
+    @Override
+    public boolean findUsable(Integer studentId, Integer computerId) {
+        LambdaQueryWrapper<WorkOrder> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(WorkOrder::getStudentId, studentId)
+                    .eq(WorkOrder::getComputerId, computerId);
+
+        WorkOrder workOrder = workOrderMapper.selectOne(queryWrapper);
+
+        if (workOrder == null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public Result add(WorkOrder workOrder) {
+        workOrderMapper.insert(workOrder);
+        return Result.ok(null);
+    }
 }
 
 

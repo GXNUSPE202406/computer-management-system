@@ -1,14 +1,10 @@
 package com.gxnu.controller;
 
 import com.gxnu.DTO.ApplicationInfo;
-import com.gxnu.pojo.Machine;
-import com.gxnu.pojo.Student;
-import com.gxnu.pojo.StudentRegistrationRequest;
-import com.gxnu.pojo.WorkOrder;
-import com.gxnu.service.MachineService;
-import com.gxnu.service.RoomService;
-import com.gxnu.service.StudentService;
-import com.gxnu.service.WorkOrderService;
+import com.gxnu.DTO.UsableMachine;
+import com.gxnu.pojo.*;
+import com.gxnu.pojo.Record;
+import com.gxnu.service.*;
 import com.gxnu.utils.MailMsg;
 import com.gxnu.utils.Result;
 import com.gxnu.utils.ResultCodeEnum;
@@ -43,6 +39,9 @@ public class StudentController {
 
     @Autowired
     private RoomService roomService;
+
+    @Autowired
+    private RecordService recordService;
 
 
     //登录
@@ -101,13 +100,12 @@ public class StudentController {
 
     @PostMapping("useMachineInfo")
     public Result useMachineInfo(@RequestBody Student student) {
-
         List<WorkOrder> list = workOrderService.findByStuId(student.getStudentId());
         List<ApplicationInfo> resultList = new ArrayList<>();
         int count = list.size();
 
         if (count == 0) {
-            Result.build(null, ResultCodeEnum.NULL);
+            return Result.build(null, ResultCodeEnum.NULL);
         }
 
         Date date = new Date();
@@ -132,7 +130,8 @@ public class StudentController {
 
             long d = date.getTime() - e.getBeginTime().getTime();
             long hour = (long) Math.ceil((double) d / (1000 * 60 * 60));
-            applicationInfo.setCost((int)hour);
+            long cost = hour * machine.getCostPerHour();
+            applicationInfo.setCost((int)cost);
 
             resultList.add(applicationInfo);
         }
@@ -144,4 +143,59 @@ public class StudentController {
         return Result.build(map, ResultCodeEnum.SUCCESS);
     }
 
+    @PostMapping("pay")
+    public Result pay(@RequestBody WorkOrder workOrder) {
+        WorkOrder delWorkOrder = workOrderService.findById(workOrder.getWorkId());
+        Record record = new Record();
+        record.setStudentId(delWorkOrder.getStudentId());
+        record.setComputerId(delWorkOrder.getComputerId());
+        record.setRoomId(delWorkOrder.getRoomId());
+        record.setBeginTime(delWorkOrder.getBeginTime());
+
+        System.out.println(record);
+        recordService.add(record);
+        //recordService.save(record);
+        Result result = workOrderService.del(delWorkOrder);
+        return result;
+    }
+
+    @PostMapping("findUsableMachine")
+    public Result findUsableMachine(@RequestBody Student student) {
+        List<Machine> list = machineService.list();
+        List<UsableMachine> resultList = new ArrayList<>();
+
+        for (Machine e : list) {
+            boolean b = workOrderService.findUsable(student.getStudentId(), e.getComputerId());
+            if (!b) {
+                UsableMachine usableRoom = new UsableMachine();
+                usableRoom.setRoomId(e.getRoomId());
+                usableRoom.setComputerId(e.getComputerId());
+
+                String roomName = roomService.findRoomNameById(e.getRoomId());
+                usableRoom.setRoomName(roomName);
+
+                usableRoom.setCostPerHour(e.getCostPerHour());
+                usableRoom.setCpuModel(e.getCpuModel());
+                usableRoom.setGpuModel(e.getGpuModel());
+                usableRoom.setScreenModel(e.getScreenModel());
+
+                resultList.add(usableRoom);
+            }
+        }
+
+        int count = resultList.size();
+
+        Map map = new HashMap();
+        map.put("count", count);
+        map.put("data", resultList);
+        return Result.ok(map);
+    }
+
+    @PostMapping("applyMachine")
+    public Result applyMachine(@RequestBody WorkOrder workOrder) {
+        Date date = new Date();
+        workOrder.setBeginTime(date);
+        Result result = workOrderService.add(workOrder);
+        return result;
+    }
 }

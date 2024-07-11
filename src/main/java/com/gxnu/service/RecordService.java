@@ -2,6 +2,7 @@ package com.gxnu.service;
 
 import com.gxnu.pojo.Record;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.gxnu.pojo.WorkOrder;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -14,4 +15,6 @@ import java.util.List;
 public interface RecordService extends IService<Record> {
 
     List<Record> getRecordsBetweenDates(Integer roomId, Timestamp starDate, Timestamp endDate);
+
+    void add(Record record);
 }

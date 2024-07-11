@@ -18,6 +18,7 @@ import com.gxnu.utils.ResultCodeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.Mac;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +85,15 @@ public class MachineServiceImpl extends ServiceImpl<MachineMapper, Machine>
 
     @Override
     public Result delMachine(String computerId) {
+        LambdaQueryWrapper<Machine> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Machine::getComputerId, Integer.parseInt(computerId));
+
+        Machine machine = machineMapper.selectOne(queryWrapper);
+
+        Room room = roomMapper.selectById(machine.getRoomId());
+        room.setMachineNumber(room.getMachineNumber() - 1);
+        roomMapper.updateById(room);
+
         machineMapper.deleteById(Integer.parseInt(computerId));
         return Result.ok(null);
     }

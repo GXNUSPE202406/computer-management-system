@@ -4,8 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>学生界面</title>
-  <!-- 请勿在项目正式环境中引用该 layui.css 地址 -->
-  <!-- <link href="//unpkg.com/layui@2.9.13/dist/css/layui.css" rel="stylesheet"> -->
   <link rel="stylesheet" href="layui/css/layui.css">
 </head>
 <body>
@@ -36,7 +34,7 @@
           <a href="javascript:;" id="home-link">首页</a>
         </li>
         <li class="layui-nav-item">
-          <a href="javascript:;">申请机器</a>
+          <a href="javascript:;" id="apply-machine-link">申请机器</a>
         </li>
       </ul>
     </div>
@@ -53,13 +51,10 @@
   </div>
 </div>
 
-<!-- 请勿在项目正式环境中引用该 layui.js 地址 -->
-<!-- <script src="//unpkg.com/layui@2.9.13/dist/layui.js"></script> -->
 <script src="layui/layui.js"></script>
 <script>
-layui.use(['element', 'table', 'laypage', 'layer'], function(){
+layui.use(['element', 'laypage', 'layer'], function(){
     var element = layui.element;
-    var table = layui.table;
     var laypage = layui.laypage;
     var layer = layui.layer;
   
@@ -74,40 +69,269 @@ layui.use(['element', 'table', 'laypage', 'layer'], function(){
         loadHomePage();
         break;
       case '申请机器':
-        loadMachineInfoPage();
+        loadMachineApplicationPage();
         break;
       default:
         loadHomePage();
     }
   });
+
   // 加载首页内容
-    function loadHomePage() {
+  function loadHomePage() {
     document.getElementById('content').innerHTML = `
-        <span id="ues"><h1>您目前申请使用的机器如下：</h1></span>
-        <table class="layui-table" id="machine-table"></table>
-        <div id="pagination"></div>
+      <span id="ues"><h1>您目前申请使用的机器如下：</h1></span>
+      <table class="layui-table" id="machine-table">
+        <thead>
+          <tr>
+            <th>机房名字</th>
+            <th>显示器</th>
+            <th>CPU</th>
+            <th>显卡</th>
+            <th>上机时间</th>
+            <th>预计花费</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div id="pagination"></div>
     `;
     fetchMachineInfo();
+  }
+
+  // 加载申请机器内容
+  function loadMachineApplicationPage() {
+    document.getElementById('content').innerHTML = `
+      <h1>申请机器</h1>
+      <table class="layui-table" id="apply-machine-table">
+        <thead>
+          <tr>
+            <th>序号</th>
+            <th>机房名称</th>
+            <th>显示器</th>
+            <th>CPU</th>
+            <th>显卡</th>
+            <th>单价</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div id="apply-pagination"></div>
+    `;
+    fetchUsableMachines();
+  }
+
+  // 获取可用机器信息并渲染表格和分页
+  async function fetchUsableMachines() {
+    var token = localStorage.getItem('token');
+    
+    try {
+      let response = await fetch('http://localhost:8080/student/findUsableMachine', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token
+        },
+        body: JSON.stringify({
+          studentId: studentInfo.data.loginStu.studentId
+        })
+      });
+
+      let result = await response.json();
+      console.log('Usable Machine Info Response:', result);
+
+      if (result.code === 200) {
+        renderApplyTableAndPagination(result.data.data);
+      } else {
+        layer.msg('获取可用机器信息失败');
+      }
+    } catch (error) {
+      console.error('Fetch Usable Machine Info Error:', error);
+      layer.msg('获取可用机器信息失败');
+    }
+  }
+
+  // 渲染申请机器表格和分页
+  function renderApplyTableAndPagination(data) {
+    function renderApplyTableData(dataSlice) {
+      const tbody = document.querySelector('#apply-machine-table tbody');
+      tbody.innerHTML = ''; // 清空现有的表格内容
+      dataSlice.forEach((item, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${item.roomName}</td>
+          <td>${item.screenModel}</td>
+          <td>${item.cpuModel}</td>
+          <td>${item.gpuModel}</td>
+          <td>${item.costPerHour}</td>
+          <td><button class="layui-btn layui-btn-normal" onclick="applyMachine(${item.computerId})">申请机器</button></td>
+        `;
+        tbody.appendChild(row);
+      });
     }
 
-    // 加载申请机器内容
-    function loadMachineInfoPage() {
-    document.getElementById('content').innerHTML = `
-        <h1>机器信息管理</h1><p>这里是机器信息管理内容</p>
-    `;
+    laypage.render({
+      elem: 'apply-pagination',
+      count: data.length,
+      limit: 10,
+      jump: function(obj, first) {
+        const start = (obj.curr - 1) * obj.limit;
+        const end = obj.curr * obj.limit;
+        renderApplyTableData(data.slice(start, end));
+      }
+    });
+
+    // 初始渲染第一页
+    renderApplyTableData(data.slice(0, 10));
+  }
+
+  // 申请机器
+  window.applyMachine = async function(computerId) {
+    var token = localStorage.getItem('token');
+    
+    try {
+      let response = await fetch('http://localhost:8080/student/applyMachine', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token
+        },
+        body: JSON.stringify({
+          studentId: studentInfo.data.loginStu.studentId,
+          computerId: computerId
+        })
+      });
+
+      let result = await response.json();
+      console.log('Apply Machine Response:', result);
+
+      if (result.code === 200) {
+        layer.msg('申请成功');
+        fetchUsableMachines(); // 重新加载可用机器信息
+      } else {
+        layer.msg('申请失败');
+      }
+    } catch (error) {
+      console.error('Apply Machine Error:', error);
+      layer.msg('申请失败');
     }
+  }
+
+  // 获取机器信息并渲染表格和分页
+  async function fetchMachineInfo() {
+    var token = localStorage.getItem('token');
+    
+    try {
+      let response = await fetch('http://localhost:8080/student/useMachineInfo', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          studentId: studentInfo.data.loginStu.studentId,
+          studentNumber: studentInfo.data.loginStu.studentNumber,
+          studentEmail: studentInfo.data.loginStu.studentEmail,
+          studentName: studentInfo.data.loginStu.studentName,
+        })
+      });
+
+      let otherInfo = await response.json();
+      console.log('Machine Info Response:', otherInfo);
+
+      if (otherInfo.code === 200) {
+        renderTableAndPagination(otherInfo.data.data);
+      } else if (otherInfo.code === 202) {
+        document.getElementById('ues').innerHTML = '<h1>你还没有申请机器。</h1>';
+      }
+    } catch (error) {
+      console.error('Fetch Machine Info Error:', error);
+      //window.location.href = 'StudentLogin.html';
+    }
+  }
+
+  // 渲染表格和分页
+  function renderTableAndPagination(data) {
+    function renderTableData(dataSlice) {
+      const tbody = document.querySelector('#machine-table tbody');
+      tbody.innerHTML = ''; // 清空现有的表格内容
+      dataSlice.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${item.roomName}</td>
+          <td>${item.screenModel}</td>
+          <td>${item.cpuModel}</td>
+          <td>${item.gpuModel}</td>
+          <td>${item.beginTime}</td>
+          <td>${item.cost}</td>
+          <td><button class="layui-btn layui-btn-danger" onclick="endMachineUse('${item.workId}', '${item.cost}')">结束上机</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    laypage.render({
+      elem: 'pagination',
+      count: data.length,
+      limit: 10,
+      jump: function(obj, first) {
+        const start = (obj.curr - 1) * obj.limit;
+        const end = obj.curr * obj.limit;
+        renderTableData(data.slice(start, end));
+      }
+    });
+
+    // 初始渲染第一页
+    renderTableData(data.slice(0, 10));
+  }
+
+  // 结束上机并付钱
+  window.endMachineUse = function(workId, cost) {
+    layer.confirm(`你当前的花费是 ${cost}，确认付钱吗？`, {
+      btn: ['付钱', '取消']
+    }, async function(index){
+      layer.close(index);
+      var token = localStorage.getItem('token');
+      
+      try {
+        let response = await fetch('http://localhost:8080/student/pay', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'token': token
+          },
+          body: JSON.stringify({
+            workId: workId,
+          })
+        });
+
+        let result = await response.json();
+        console.log('Pay Response:', result);
+
+        if (result.code === 200) {
+          layer.msg('付钱成功');
+          fetchMachineInfo(); // 重新加载机器信息
+        } else {
+          layer.msg('付钱失败');
+        }
+      } catch (error) {
+        console.error('Pay Error:', error);
+        layer.msg('付钱失败');
+      }
+    });
+  }
 });
+
 document.addEventListener('DOMContentLoaded', async function() {
   var token = localStorage.getItem('token');
   
   if (!token) {
-    // 如果没有token，重定向到登录页面
     window.location.href = 'StudentLogin.html';
     return;
   }
 
   try {
-    // 第一个请求
     let response = await fetch('http://localhost:8080/student/getStuInfo', {
       method: 'GET',
       headers: {
@@ -117,44 +341,20 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
 
     let studentInfo = await response.json();
+    console.log('Student Info Response:', studentInfo);
 
     if (studentInfo.code === 200) {
-        // 更新用户名
-        document.getElementById('username').textContent = studentInfo.data.loginStu.studentName;
+      document.getElementById('username').textContent = studentInfo.data.loginStu.studentName;
+      // 存储 studentInfo 到全局变量
+      window.studentInfo = studentInfo;
+      document.getElementById('home-link').click();
     } else {
-        window.location.href = 'StudentLogin.html';
+      window.location.href = 'StudentLogin.html';
     }
-
-    // 发送第二个请求，携带第一个请求返回的数据
-    response = await fetch('http://localhost:8080/student/useMachineInfo', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        studentId: studentInfo.data.loginStu.studentId,
-        studentNumber: studentInfo.data.loginStu.studentNumber,
-        studentEmail: studentInfo.data.loginStu.studentEmail,
-        studentName: studentInfo.data.loginStu.studentName,
-      })
-    });
-
-    let otherInfo = await response.json();
-    // 处理第二个请求的响应数据
-    console.log(otherInfo);
-    if (otherInfo.code === 200) {
-        console.log(otherInfo);
-        console.log(studentInfo);
-    }
-
-    
-
-  } catch(error) {
-    console.error(error);
-    // 处理错误，重定向到登录页面
+  } catch (error) {
+    console.error('Fetch Student Info Error:', error);
     window.location.href = 'StudentLogin.html';
   }
-document.getElementById('home-link').click();
 });
 </script>
 </body>

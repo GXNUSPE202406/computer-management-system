@@ -3,6 +3,7 @@ package com.gxnu.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gxnu.pojo.Record;
+import com.gxnu.pojo.WorkOrder;
 import com.gxnu.service.RecordService;
 import com.gxnu.mapper.RecordMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,15 @@ public class RecordServiceImpl extends ServiceImpl<RecordMapper, Record>
 
         return list;
     }
+
+    @Override
+    public void add(Record record) {
+
+        recordMapper.insert(record);
+        System.out.println("tt");
+    }
+
+
 }
 
 
