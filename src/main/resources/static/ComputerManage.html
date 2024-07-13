@@ -5,6 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>管理员界面</title>
   <link rel="stylesheet" href="layui/css/layui.css">
+  <style>
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    input[type="text"] {
+        width: calc(100% - 10px);
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    input[type="text"]:focus {
+        border-color: #007BFF;
+        outline: none;
+    }
+    input[type="submit"] {
+        background-color: #007BFF;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    input[type="submit"]:hover {
+        background-color: #0056b3;
+    }
+</style>
 </head>
 <body>
 <div class="layui-layout layui-layout-admin">
@@ -174,7 +202,7 @@ layui.use(['layer', 'table', 'laypage'], function(){
                 layer.msg('修改成功');
                 setTimeout(function() {
                     location.reload();
-                }, 2000);
+                }, 500);
                 layer.close(index);
               } else {
                 layer.msg('修改失败');
@@ -201,7 +229,7 @@ layui.use(['layer', 'table', 'laypage'], function(){
             layer.msg('删除成功');
             setTimeout(function() {
                 location.reload();
-            }, 2000);
+            }, 500);
           } else {
             layer.msg('删除失败');
           }
@@ -217,7 +245,7 @@ layui.use(['layer', 'table', 'laypage'], function(){
         title: '添加',
         area: ['500px', '400px'],
         content: `
-            <div style="padding: 20px;">
+        <div style="padding: 20px;">
                 <form id="addRoomForm">
                     <div>
                         <label for="screenModel">显示器:</label>
@@ -225,7 +253,7 @@ layui.use(['layer', 'table', 'laypage'], function(){
                     </div>
                     <div>
                         <label for="cpuModel">CPU型号:</label>
-                        <input type="text" id="cpuModel" name="cpuModel"  required>
+                        <input type="text" id="cpuModel" name="cpuModel" required>
                     </div>
                     <div>
                         <label for="gpuModel">GPU型号:</label>
@@ -233,7 +261,7 @@ layui.use(['layer', 'table', 'laypage'], function(){
                     </div>
                     <div>
                         <label for="costPerHour">每小时成本:</label>
-                        <input type="text" id="costPerHour" name="costPerHour"  required>
+                        <input type="text" id="costPerHour" name="costPerHour" required>
                     </div>
                 </form>
             </div>
@@ -262,7 +290,7 @@ layui.use(['layer', 'table', 'laypage'], function(){
                 layer.msg('修改成功');
                 setTimeout(function() {
                     location.reload();
-                }, 2000);
+                }, 500);
                 layer.close(index);
               } else {
                 layer.msg('修改失败');

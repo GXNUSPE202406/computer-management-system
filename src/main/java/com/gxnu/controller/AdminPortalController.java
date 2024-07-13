@@ -2,14 +2,9 @@ package com.gxnu.controller;
 
 import com.gxnu.DTO.TotalInfo;
 import com.gxnu.DTO.TotalRequest;
-import com.gxnu.pojo.Machine;
-import com.gxnu.pojo.PortalVo;
+import com.gxnu.pojo.*;
 import com.gxnu.pojo.Record;
-import com.gxnu.pojo.Room;
-import com.gxnu.service.MachineService;
-import com.gxnu.service.RecordService;
-import com.gxnu.service.RoomService;
-import com.gxnu.service.StudentService;
+import com.gxnu.service.*;
 import com.gxnu.utils.Result;
 import com.gxnu.utils.ResultCodeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +34,9 @@ public class AdminPortalController {
     @Autowired
     private StudentService studentService;
 
+    @Autowired
+    private WorkOrderService workOrderService;
+
 
     @PostMapping ("addMachine")
     public Result addMachine(@RequestBody Machine machine) {
@@ -48,6 +46,8 @@ public class AdminPortalController {
 
     @GetMapping ("delMachine/{computerId}")
     public Result delMachine(@PathVariable String computerId) {
+        recordService.delByComputerId(computerId);
+        workOrderService.delByComputerId(computerId);
         Result result = machineService.delMachine(computerId);
         return result;
     }

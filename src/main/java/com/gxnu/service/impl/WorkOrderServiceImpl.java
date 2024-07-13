@@ -55,10 +55,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
-    public boolean findUsable(Integer studentId, Integer computerId) {
+    public boolean findUsable(Integer computerId) {
         LambdaQueryWrapper<WorkOrder> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(WorkOrder::getStudentId, studentId)
-                    .eq(WorkOrder::getComputerId, computerId);
+        queryWrapper.eq(WorkOrder::getComputerId, computerId);
 
         WorkOrder workOrder = workOrderMapper.selectOne(queryWrapper);
 
@@ -73,6 +72,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     public Result add(WorkOrder workOrder) {
         workOrderMapper.insert(workOrder);
         return Result.ok(null);
+    }
+
+    @Override
+    public void delByComputerId(String computerId) {
+        LambdaQueryWrapper<WorkOrder> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(WorkOrder::getComputerId, computerId);
+
+        workOrderMapper.delete(queryWrapper);
     }
 }
 

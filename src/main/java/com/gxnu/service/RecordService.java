@@ -17,4 +17,6 @@ public interface RecordService extends IService<Record> {
     List<Record> getRecordsBetweenDates(Integer roomId, Timestamp starDate, Timestamp endDate);
 
     void add(Record record);
+
+    void delByComputerId(String computerId);
 }

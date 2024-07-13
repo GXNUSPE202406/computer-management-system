@@ -19,7 +19,9 @@ public interface WorkOrderService extends IService<WorkOrder> {
 
     WorkOrder findById(Integer workId);
 
-    boolean findUsable(Integer studentId, Integer computerId);
+    boolean findUsable(Integer computerId);
 
     Result add(WorkOrder workOrder);
+
+    void delByComputerId(String computerId);
 }

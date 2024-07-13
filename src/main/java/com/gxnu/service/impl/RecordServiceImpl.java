@@ -43,6 +43,13 @@ public class RecordServiceImpl extends ServiceImpl<RecordMapper, Record>
         System.out.println("tt");
     }
 
+    @Override
+    public void delByComputerId(String computerId) {
+        LambdaQueryWrapper<Record> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Record::getComputerId, computerId);
+        recordMapper.delete(queryWrapper);
+    }
+
 
 }
 

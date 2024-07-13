@@ -165,7 +165,7 @@ public class StudentController {
         List<UsableMachine> resultList = new ArrayList<>();
 
         for (Machine e : list) {
-            boolean b = workOrderService.findUsable(student.getStudentId(), e.getComputerId());
+            boolean b = workOrderService.findUsable(e.getComputerId());
             if (!b) {
                 UsableMachine usableRoom = new UsableMachine();
                 usableRoom.setRoomId(e.getRoomId());

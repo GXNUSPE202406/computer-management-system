@@ -76,7 +76,7 @@
                 <div class="layui-input-prefix">
                     <i class="layui-icon layui-icon-username"></i>
                 </div>
-                <input type="text" name="nickname" value="" lay-verify="required" placeholder="昵称" autocomplete="off" class="layui-input" lay-affix="clear">
+                <input type="text" name="nickname" value="" lay-verify="required" placeholder="名字" autocomplete="off" class="layui-input" lay-affix="clear">
             </div>
         </div>
         <div class="layui-form-item">
@@ -165,7 +165,7 @@
                         console.log('Success:', data); // 处理成功响应
                         // 这里可以跳转到成功页面或其他操作
                         layer.msg('注册成功', {
-                            time: 2000 // 2秒后自动关闭
+                            time: 500 // 0.5秒后自动关闭
                         }, function(){
                             window.location.href = 'StudentLogin.html'; // 注册成功后跳转到登录页面
                         });

@@ -14,15 +14,14 @@
     <ul class="layui-nav layui-layout-right">
       <li class="layui-nav-item">
         <a href="javascript:;">
-          <img src="/computer manager/img/1.png" class="layui-nav-img" id="user-avatar">
-          <span id="username">null</span>
+          <span id="username">null</span>, 您好
         </a>
         <dl class="layui-nav-child">
           <dd><a href="">基本资料</a></dd>
           <dd><a href="">安全设置</a></dd>
         </dl>
       </li>
-      <li class="layui-nav-item"><a href="AdminLogin.html">退出</a></li>
+      <li class="layui-nav-item"><a href="StudentLogin.html">退出</a></li>
     </ul>
   </div>
   
@@ -161,12 +160,12 @@ layui.use(['element', 'laypage', 'layer'], function(){
         const row = document.createElement('tr');
         row.innerHTML = `
           <td>${index + 1}</td>
-          <td>${item.roomName}</td>
+          <td>${item.roomId}</td>
           <td>${item.screenModel}</td>
           <td>${item.cpuModel}</td>
           <td>${item.gpuModel}</td>
           <td>${item.costPerHour}</td>
-          <td><button class="layui-btn layui-btn-normal" onclick="applyMachine(${item.computerId})">申请机器</button></td>
+          <td><button class="layui-btn layui-btn-normal" onclick="applyMachine(${item.computerId}, ${item.roomId})">申请机器</button></td>
         `;
         tbody.appendChild(row);
       });
@@ -188,7 +187,7 @@ layui.use(['element', 'laypage', 'layer'], function(){
   }
 
   // 申请机器
-  window.applyMachine = async function(computerId) {
+  window.applyMachine = async function(computerId, roomId) {
     var token = localStorage.getItem('token');
     
     try {
@@ -200,6 +199,7 @@ layui.use(['element', 'laypage', 'layer'], function(){
         },
         body: JSON.stringify({
           studentId: studentInfo.data.loginStu.studentId,
+          roomId: roomId,
           computerId: computerId
         })
       });
@@ -244,6 +244,7 @@ layui.use(['element', 'laypage', 'layer'], function(){
         renderTableAndPagination(otherInfo.data.data);
       } else if (otherInfo.code === 202) {
         document.getElementById('ues').innerHTML = '<h1>你还没有申请机器。</h1>';
+        
       }
     } catch (error) {
       console.error('Fetch Machine Info Error:', error);
@@ -311,7 +312,7 @@ layui.use(['element', 'laypage', 'layer'], function(){
 
         if (result.code === 200) {
           layer.msg('付钱成功');
-          fetchMachineInfo(); // 重新加载机器信息
+          location.reload(); // 重新加载机器信息
         } else {
           layer.msg('付钱失败');
         }
