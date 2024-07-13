@@ -138,10 +138,8 @@ public class MachineServiceImpl extends ServiceImpl<MachineMapper, Machine>
         LambdaQueryWrapper<Machine> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Machine::getRoomId, Integer.parseInt(roomId));
 
-
         machineMapper.delete(queryWrapper);
 
-        return;
     }
 
 }
