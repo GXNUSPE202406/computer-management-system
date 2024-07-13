@@ -2,6 +2,7 @@ package com.gxnu.service.impl;
 
 import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gxnu.pojo.Student;
 import com.gxnu.service.StudentService;
@@ -96,6 +97,21 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student>
     }
 
     @Override
+    public Result checkForgetStuEmail(String email) {
+        LambdaQueryWrapper<Student> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Student::getStudentEmail, email);
+        Student student = studentMapper.selectOne(queryWrapper);
+
+        // 邮箱存在
+        if (student != null) {
+            return Result.ok(null);
+        }
+
+        return Result.build(null, ResultCodeEnum.USERNAME_USED);
+    }
+
+
+    @Override
     public Result regist(Student student) {
         LambdaQueryWrapper<Student> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Student::getStudentEmail, student.getStudentEmail());
@@ -114,6 +130,17 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student>
     }
 
     @Override
+    public Result passwordChange(Student student) {
+        LambdaUpdateWrapper<Student> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(Student::getStudentEmail, student.getStudentEmail())
+                .set(Student::getStudentPassword, student.getStudentPassword());
+
+        this.update(null, updateWrapper);
+
+        return Result.ok(null);
+    }
+
+    @Override
     public String findStuName(Integer studentId) {
         LambdaQueryWrapper<Student> queryWrapper = new LambdaQueryWrapper();
         queryWrapper.eq(Student::getStudentId, studentId);
@@ -122,6 +149,8 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student>
 
         return student.getStudentName();
     }
+
+
 }
 
 

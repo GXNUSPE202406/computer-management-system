@@ -23,4 +23,8 @@ public interface StudentService extends IService<Student> {
     Result regist(Student student);
 
     String findStuName(Integer studentId);
+
+    Result checkForgetStuEmail(String email);
+
+    Result passwordChange(Student student);
 }

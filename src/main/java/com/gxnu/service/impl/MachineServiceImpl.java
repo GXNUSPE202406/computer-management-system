@@ -133,6 +133,17 @@ public class MachineServiceImpl extends ServiceImpl<MachineMapper, Machine>
         return machine;
     }
 
+    @Override
+    public void delMachineByRoomId(String roomId) {
+        LambdaQueryWrapper<Machine> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Machine::getRoomId, Integer.parseInt(roomId));
+
+
+        machineMapper.delete(queryWrapper);
+
+        return;
+    }
+
 }
 
 

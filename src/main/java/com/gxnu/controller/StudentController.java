@@ -5,6 +5,7 @@ import com.gxnu.DTO.UsableMachine;
 import com.gxnu.pojo.*;
 import com.gxnu.pojo.Record;
 import com.gxnu.service.*;
+import com.gxnu.utils.MD5Util;
 import com.gxnu.utils.MailMsg;
 import com.gxnu.utils.Result;
 import com.gxnu.utils.ResultCodeEnum;
@@ -66,6 +67,12 @@ public class StudentController {
         return result;
     }
 
+    @GetMapping("checkForgetStuEmail/{email}")
+    public Result checkForgetStuEmail(@PathVariable String email) {
+        Result result = studentService.checkForgetStuEmail(email);
+        return result;
+    }
+
     //注册
     @PostMapping("regist")
     public Result regist(@RequestBody StudentRegistrationRequest request){
@@ -78,6 +85,22 @@ public class StudentController {
          }
 
         Result result = studentService.regist(student);
+        return result;
+    }
+
+    @PostMapping("passwordChange")
+    public Result passwordChange(@RequestBody StudentRegistrationRequest request) {
+        Student student = request.getStudent();
+        String emailVerificationCode = request.getEmailVerificationCode();
+
+        boolean isCodeValid = emailVerificationCode.equals(redisTemplate.opsForValue().get(student.getStudentEmail()));
+        if (!isCodeValid) {
+            return Result.fair(null);
+        }
+
+        student.setStudentPassword(MD5Util.encrypt(student.getStudentPassword()));
+
+        Result result = studentService.passwordChange(student);
         return result;
     }
 

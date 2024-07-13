@@ -76,6 +76,7 @@ public class AdminPortalController {
 
     @GetMapping("delRoom")
     public Result delRoom(@RequestParam String roomId) {
+        machineService.delMachineByRoomId(roomId);
         Result result = roomService.delRoom(roomId);
         return result;
     }
